@@ -39,21 +39,21 @@ jobs:
           git add coreus-onefile.html
           git diff --cached --quiet || git commit -m "Auto-build coreus-onefile.html"
           git push
-+
-+      - name: Determine if deploy is needed
-+        id: deploy_check
-+        run: |
-+          # compare files changed between previous commit and current
-+          before=${{ github.event.before }}
-+          after=${{ github.sha }}
-+          echo "Checking diff $before..$after"
-+          files=$(git diff --name-only "$before" "$after" || true)
-+          echo "Changed files:\n$files"
-+          if echo "$files" | grep -E '^(index.html|coreus-onefile.html|assets/)' >/dev/null; then
-+            echo "deploy=true" >> $GITHUB_OUTPUT
-+          else
-+            echo "deploy=false" >> $GITHUB_OUTPUT
-+          fi
+
+      - name: Determine if deploy is needed
+        id: deploy_check
+        run: |
+          # compare files changed between previous commit and current
+          before=${{ github.event.before }}
+          after=${{ github.sha }}
+          echo "Checking diff $before..$after"
+          files=$(git diff --name-only "$before" "$after" || true)
+          echo "Changed files:\n$files"
+          if echo "$files" | grep -E '^(index.html|coreus-onefile.html|assets/)' >/dev/null; then
+            echo "deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy=false" >> $GITHUB_OUTPUT
+          fi
 
   deploy:
     needs: build-onefile
