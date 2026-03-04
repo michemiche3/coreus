@@ -5,23 +5,203 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coreus Chat</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    #messages { list-style: none; padding: 0; max-height: 300px; overflow-y: auto; border: 1px solid #ccc; }
-    #messages li { padding: 5px; }
-    #messages li:nth-child(odd) { background: #f9f9f9; }
-    #chat-form { margin-top: 10px; }
-    #chat-input { width: 80%; padding: 5px; }
-    #chat-button { padding: 5px 10px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #0a0a0a;
+    }
+
+    .chat-header {
+      padding: 18px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-bottom: 1px solid #222;
+      background: linear-gradient(180deg, #1a1a1a, #0a0a0a);
+      letter-spacing: 0.1em;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    #messages {
+      flex: 1;
+      list-style: none;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #0a0a0a;
+    }
+
+    #messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #messages::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 3px;
+    }
+
+    #messages::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    .message-item {
+      animation: slideIn 0.3s ease-out;
+      padding: 11px 14px;
+      border-radius: 8px;
+      background: #151515;
+      border-left: 3px solid #444;
+      word-wrap: break-word;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .message-item:hover {
+      background: #1f1f1f;
+      border-left-color: #666;
+    }
+
+    .message-text {
+      flex: 1;
+      line-height: 1.35;
+      font-size: 0.9rem;
+      color: #ddd;
+    }
+
+    .message-time {
+      font-size: 0.7rem;
+      color: #777;
+      white-space: nowrap;
+      font-family: 'Courier New', monospace;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #chat-form {
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid #222;
+      padding: 14px;
+      background: #101010;
+      flex-shrink: 0;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: #ddd;
+      outline: none;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    #chat-input:focus {
+      border-color: #555;
+      background: #222;
+    }
+
+    #chat-input::placeholder {
+      color: #666;
+    }
+
+    .chat-btn {
+      padding: 10px 22px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: #ddd;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      flex-shrink: 0;
+    }
+
+    .chat-btn:hover {
+      background: #2a2a2a;
+      border-color: #666;
+      color: #fff;
+    }
+
+    .chat-btn:active {
+      transform: scale(0.96);
+    }
+
+    #chat-button {
+      background: #1a1a1a;
+      color: #ddd;
+      border: 1px solid #444;
+    }
+
+    #chat-button:hover {
+      background: #2a2a2a;
+      border-color: #666;
+      color: #fff;
+    }
+
+    #clear-button {
+      background: #2a1a1a;
+      color: #ff6b6b;
+      border: 1px solid #663333;
+    }
+
+    #clear-button:hover {
+      background: #3a2a2a;
+      border-color: #994444;
+      color: #ff9999;
+    }
   </style>
 </head>
 <body>
-  <h1>Coreus Chat</h1>
-  <ul id="messages"></ul>
-  <form id="chat-form">
-    <input id="chat-input" autocomplete="off" placeholder="Type a message..." />
-    <button id="chat-button" type="submit">Send</button>
-    <button id="clear-button" type="button" style="margin-left:8px;color:red;">Clear history</button>
-  </form>
+  <div class="chat-wrapper">
+    <div class="chat-header">⬤ COREUS CHAT</div>
+    <ul id="messages"></ul>
+    <form id="chat-form">
+      <input id="chat-input" autocomplete="off" placeholder="Message..." />
+      <button id="chat-button" class="chat-btn" type="submit">SEND</button>
+      <button id="clear-button" class="chat-btn" type="button">CLEAR</button>
+    </form>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -33,14 +213,30 @@
 
     function appendMessage(entry) {
       const li = document.createElement('li');
+      li.className = 'message-item';
+      
       const date = new Date(entry.time);
-      li.textContent = `[${date.toLocaleTimeString()}] ${entry.text}`;
+      const timeStr = date.toLocaleTimeString();
+      
+      const textEl = document.createElement('div');
+      textEl.className = 'message-text';
+      textEl.textContent = entry.text;
+      
+      const timeEl = document.createElement('div');
+      timeEl.className = 'message-time';
+      timeEl.textContent = timeStr;
+      
+      li.appendChild(textEl);
+      li.appendChild(timeEl);
+      
       messagesEl.appendChild(li);
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
     socket.on('initialMessages', (msgs) => {
-      msgs.forEach(appendMessage);
+      if (Array.isArray(msgs)) {
+        msgs.forEach(appendMessage);
+      }
     });
 
     socket.on('chatMessage', appendMessage);
@@ -55,8 +251,9 @@
     });
 
     const clearBtn = document.getElementById('clear-button');
-    clearBtn.addEventListener('click', async () => {
-      if (!confirm('Permanently clear the chat history on the server?')) return;
+    clearBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (!confirm('Clear all chat history?')) return;
       await fetch('/messages/clear', { method: 'POST' });
       messagesEl.innerHTML = '';
     });
