@@ -57,7 +57,6 @@ jobs:
 
   deploy:
     needs: build-onefile
-    if: ${{ needs.build-onefile.outputs.deploy == 'true' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
