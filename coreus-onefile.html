@@ -426,7 +426,7 @@
             <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="hideChatView()">
                 <i class="fas fa-network-wired" style="color: white; font-size: 20px;"></i>
             </button>
-            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
             <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showGamesView()">
                 <i class="fas fa-gamepad" style="color: white; font-size: 20px;"></i>
             </button>
@@ -1802,7 +1802,7 @@
             if (currentAccount) {
                 currentAccount.settings = currentAccount.settings || {};
                 currentAccount.settings.theme = theme;
-                saveAccount(currentAccount);
+                setCurrentAccount(currentAccount); // update snapshot and hash
             }
         }
 
@@ -1847,11 +1847,157 @@
             }
         }
 
-        function saveAccount(acc) {
+        async function saveAccount(acc) {
             try {
+                suppressHashTrigger = true;
+                // Capture storage snapshot separately, not in the hash
+                const snapshot = {
+                    localStorage: getLocalStorageData(),
+                    indexedDB: await getIndexedDBData()
+                };
+                // Store snapshot in a separate localStorage entry
+                if (Object.keys(snapshot.localStorage).length > 0 || Object.keys(snapshot.indexedDB).length > 0) {
+                    localStorage.setItem('coreus_account_storage', JSON.stringify(snapshot));
+                }
+                // Only save the account data (username & settings) without storage
                 localStorage.setItem('coreus_account', JSON.stringify(acc));
-            } catch(e) {}
+            } catch(e) {
+                console.error('Error saving account:', e);
+            } finally {
+                suppressHashTrigger = false;
+            }
         }
+
+        // helpers for capturing and restoring browser storage
+        function getLocalStorageData() {
+            const data = {};
+            try {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    // Exclude the account data itself to avoid circular save
+                    if (key !== 'coreus_account') {
+                        data[key] = localStorage.getItem(key);
+                    }
+                }
+            } catch (e) {}
+            return data;
+        }
+
+        function dumpDatabase(name) {
+            return new Promise(resolve => {
+                const req = indexedDB.open(name);
+                req.onsuccess = function() {
+                    const db = req.result;
+                    const out = {};
+                    const txn = db.transaction(db.objectStoreNames, 'readonly');
+                    const promises = [];
+                    for (let storeName of db.objectStoreNames) {
+                        const store = txn.objectStore(storeName);
+                        const p = new Promise(res => {
+                            const getAllReq = store.getAll();
+                            getAllReq.onsuccess = () => { out[storeName] = getAllReq.result; res(); };
+                            getAllReq.onerror = () => { out[storeName] = null; res(); };
+                        });
+                        promises.push(p);
+                    }
+                    txn.oncomplete = () => {
+                        Promise.all(promises).then(() => { db.close(); resolve(out); });
+                    };
+                    txn.onerror = () => { db.close(); resolve(out); };
+                };
+                req.onerror = () => { resolve({}); };
+            });
+        }
+
+        async function getIndexedDBData() {
+            const dbs = {};
+            if (!indexedDB) return dbs;
+            if (indexedDB.databases) {
+                try {
+                    const list = await indexedDB.databases();
+                    for (const info of list) {
+                        if (!info.name) continue;
+                        dbs[info.name] = await dumpDatabase(info.name);
+                    }
+                } catch (e) {}
+            }
+            return dbs;
+        }
+
+        async function restoreDatabase(name, stores) {
+            return new Promise(resolve => {
+                const delReq = indexedDB.deleteDatabase(name);
+                delReq.onsuccess = () => {
+                    const openReq = indexedDB.open(name, 1);
+                    openReq.onupgradeneeded = e => {
+                        const db = e.target.result;
+                        for (let storeName in stores) {
+                            if (!db.objectStoreNames.contains(storeName)) {
+                                db.createObjectStore(storeName, { autoIncrement: true });
+                            }
+                        }
+                    };
+                    openReq.onsuccess = e => {
+                        const db = e.target.result;
+                        const txn = db.transaction(Object.keys(stores), 'readwrite');
+                        txn.oncomplete = () => { db.close(); resolve(); };
+                        txn.onerror = () => { db.close(); resolve(); };
+                        for (let storeName in stores) {
+                            const store = txn.objectStore(storeName);
+                            (stores[storeName] || []).forEach(item => store.put(item));
+                        }
+                    };
+                    openReq.onerror = () => { resolve(); };
+                };
+                delReq.onerror = () => { resolve(); };
+            });
+        }
+
+        async function restoreStorage(snapshot) {
+            if (!snapshot) return;
+            try {
+                localStorage.clear();
+                for (let k in snapshot.localStorage) {
+                    localStorage.setItem(k, snapshot.localStorage[k]);
+                }
+            } catch (e) {}
+            if (snapshot.indexedDB) {
+                for (let dbName in snapshot.indexedDB) {
+                    await restoreDatabase(dbName, snapshot.indexedDB[dbName]);
+                }
+            }
+        }
+
+        let suppressHashTrigger = false;
+        let hashUpdateTimeout = null;
+        function triggerHashUpdate() {
+            if (suppressHashTrigger) return;
+            if (hashUpdateTimeout) clearTimeout(hashUpdateTimeout);
+            hashUpdateTimeout = setTimeout(() => {
+                if (currentAccount) setCurrentAccount(currentAccount);
+            }, 100);
+        }
+
+        ['setItem', 'removeItem', 'clear'].forEach(fn => {
+            const orig = localStorage[fn];
+            localStorage[fn] = function(...args) {
+                const res = orig.apply(this, args);
+                triggerHashUpdate();
+                return res;
+            };
+        });
+        ['add', 'put', 'delete', 'clear'].forEach(fn => {
+            const proto = IDBObjectStore && IDBObjectStore.prototype;
+            if (proto && proto[fn]) {
+                const orig = proto[fn];
+                proto[fn] = function(...args) {
+                    const req = orig.apply(this, args);
+                    req.addEventListener('success', triggerHashUpdate);
+                    req.addEventListener('error', triggerHashUpdate);
+                    return req;
+                };
+            }
+        });
 
         function loadAccount() {
             try {
@@ -1873,9 +2019,9 @@
             updateAccountView();
         }
 
-        function setCurrentAccount(acc) {
+        async function setCurrentAccount(acc) {
             currentAccount = acc;
-            if (acc) saveAccount(acc);
+            if (acc) await saveAccount(acc);
             else localStorage.removeItem('coreus_account');
             updateAccountView();
         }
@@ -1883,17 +2029,26 @@
         function ensureNavbarProfileButton() {
             document.querySelectorAll('.bottom-navbar').forEach(nav => {
                 if (nav.querySelector('.nav-profile-btn')) return;
+                // Find settings button to insert after it
+                const settingsBtn = Array.from(nav.querySelectorAll('.nav-icon-btn')).find(btn => 
+                    btn.innerHTML.includes('fa-cog')
+                );
+                if (!settingsBtn) return;
+                
+                // Create separator
+                const sep = document.createElement('div');
+                sep.style.cssText = 'width: 1px; height: 24px; margin: 0 10px;';
+                
+                // Create account button
                 const btn = document.createElement('button');
                 btn.className = 'nav-icon-btn nav-profile-btn';
-                btn.style.background='none'; btn.style.border='none'; btn.style.cursor='pointer';
-                btn.style.padding='8px'; btn.style.borderRadius='50%';
+                btn.style.cssText = 'background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;';
                 btn.innerHTML = "<i class='fas fa-user' style='color:white;font-size:20px;'></i>";
                 btn.addEventListener('click', showAccountView);
-                const timeEl = nav.querySelector('.navbar-time');
-                if (timeEl && timeEl.previousElementSibling) {
-                    // Insert before the separator that comes before the time
-                    nav.insertBefore(btn, timeEl.previousElementSibling);
-                }
+                
+                // Insert after settings button
+                settingsBtn.parentNode.insertBefore(sep, settingsBtn.nextSibling);
+                settingsBtn.parentNode.insertBefore(btn, sep.nextSibling);
             });
         }
 
@@ -1921,13 +2076,13 @@
             }
         }
 
-        function createAccount() {
+        async function createAccount() {
             let name = document.getElementById('newUsername').value.trim();
             if (!name) {
                 name = 'guest' + Math.floor(1000 + Math.random()*9000);
             }
             const acc = { username: name, settings: { theme: getCurrentTheme() } };
-            setCurrentAccount(acc);
+            await setCurrentAccount(acc);
             alert('Account created! Your hash is:\n' + encodeAccount(acc));
         }
 
@@ -1935,11 +2090,22 @@
             document.getElementById('loginSection').style.display = 'block';
         }
 
-        function loginWithHash() {
+        async function loginWithHash() {
             const hash = document.getElementById('loginHash').value.trim();
             const acc = decodeAccount(hash);
             if (acc && acc.username) {
-                setCurrentAccount(acc);
+                // Set account (no storage restore from hash)
+                await setCurrentAccount(acc);
+                // Restore storage snapshot if it exists separately
+                try {
+                    const storageSaved = localStorage.getItem('coreus_account_storage');
+                    if (storageSaved) {
+                        const snapshot = JSON.parse(storageSaved);
+                        await restoreStorage(snapshot);
+                    }
+                } catch (e) {
+                    console.log('No storage snapshot to restore');
+                }
                 alert('Logged in as ' + acc.username);
             } else {
                 alert('Invalid hash');
@@ -1950,8 +2116,11 @@
             const name = document.getElementById('accUsername').value.trim();
             if (currentAccount) {
                 currentAccount.username = name || currentAccount.username;
-                saveAccount(currentAccount);
-                document.getElementById('accHash').value = encodeAccount(currentAccount);
+                setCurrentAccount(currentAccount);
+                // Update hash display after save completes
+                setTimeout(() => {
+                    document.getElementById('accHash').value = encodeAccount(currentAccount);
+                }, 100);
             }
         }
 
@@ -2016,20 +2185,21 @@
         <div style="display:flex; justify-content:center; align-items:center; margin-bottom:40px;">
             <h2 class="title" style="font-size:4rem; margin-bottom:0; flex-grow:1; text-align:center;">Account</h2>
         </div>
-        <div style="max-width:600px; margin:0 auto; background: rgba(13,13,13,0.6); padding:3rem 2rem; border-radius:20px; border:1px solid rgba(76,175,80,0.2); backdrop-filter:blur(10px);">
+        <div style="max-width:600px; margin:0 auto; background: rgba(13,13,13,0.6); padding:3rem 2rem; border-radius:20px; border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(10px);">
             <div id="accountNotLogged">
                 <div style="margin-bottom:2rem;">
                     <label style="color:#ffffff; display:block; margin-bottom:0.8rem; font-weight:600; font-size:0.95rem;">Username (optional)</label>
                     <input id="newUsername" placeholder="Enter username or leave blank..." style="width:100%; padding:1rem; background:rgba(255,255,255,0.05); color:var(--primary-text); border:2px solid #ffffff; border-radius:12px; font-size:1rem; outline:none; transition:all 0.3s; font-family:inherit;" onfocus="this.style.background='rgba(255,255,255,0.1)'" onblur="this.style.background='rgba(255,255,255,0.05)'">
                 </div>
-                <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:2rem; justify-content:center;">
-                    <button class="proxy-btn" style="flex:1; min-width:140px; padding:1rem 2rem; background:#ffffff; border:none; border-radius:12px; color:var(--primary-bg); font-weight:600; font-size:1rem; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(255,255,255,0.3);" onmouseover="this.style.transform='translateY(-2px);box-shadow:0 6px 20px rgba(255,255,255,0.4)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(255,255,255,0.3)'" onclick="createAccount()"><i class="fas fa-plus"></i> Create</button>
-                    <button class="proxy-btn" style="flex:1; min-width:140px; padding:1rem 2rem; background:rgba(255,255,255,0.1); border:2px solid #ffffff; border-radius:12px; color:#ffffff; font-weight:600; font-size:1rem; cursor:pointer; transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" onclick="showLoginSection()"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <div style="margin-bottom:2rem;">
+                    <button class="proxy-btn" style="width:100%; padding:0.7rem 1.5rem; background:transparent; border:2px solid #ffffff; border-radius:12px; color:#ffffff; font-weight:600; font-size:1rem; cursor:pointer; transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='transparent';this.style.transform='none'" onclick="createAccount()"><i class="fas fa-plus"></i> Create Account</button>
                 </div>
-                <div id="loginSection" style="display:none; margin-top:2rem; padding-top:2rem; border-top:2px solid rgba(255,255,255,0.2);">
-                    <label style="color:#ffffff; display:block; margin-bottom:0.8rem; font-weight:600; font-size:0.95rem;">Your Hash</label>
+                <div style="margin-bottom:2rem;">
+                    <label style="color:#ffffff; display:block; margin-bottom:0.8rem; font-weight:600; font-size:0.95rem;">Account Hash</label>
                     <input id="loginHash" placeholder="Paste your account hash here..." style="width:100%; padding:1rem; background:rgba(255,255,255,0.05); color:var(--primary-text); border:2px solid #ffffff; border-radius:12px; font-size:1rem; outline:none; transition:all 0.3s; font-family:monospace;" onfocus="this.style.background='rgba(255,255,255,0.1)'" onblur="this.style.background='rgba(255,255,255,0.05)'">
-                    <button style="margin-top:1.5rem; width:100%; padding:1rem 2rem; background:#ffffff; border:none; border-radius:12px; color:var(--primary-bg); font-weight:600; font-size:1rem; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(255,255,255,0.3);" onmouseover="this.style.transform='translateY(-2px);box-shadow:0 6px 20px rgba(255,255,255,0.4)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(255,255,255,0.3)'" onclick="loginWithHash()"><i class="fas fa-key"></i> Unlock Account</button>
+                </div>
+                <div style="margin-bottom:2rem;">
+                    <button style="width:100%; padding:1rem 2rem; background:#051B0B; border:2px solid #0d3b1f; border-radius:12px; color:#ffffff; font-weight:600; font-size:1rem; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(5,27,11,0.3);" onmouseover="this.style.transform='translateY(-2px);box-shadow:0 6px 20px rgba(5,27,11,0.4)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(5,27,11,0.3)'" onclick="loginWithHash()"><i class="fas fa-key"></i> Unlock Account</button>
                 </div>
             </div>
             <div id="accountLogged" style="display:none;">

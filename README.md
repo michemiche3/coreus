@@ -27,7 +27,7 @@
 - 🔓 Single file, completely unblockable
 - 🚫 No ads
 - 🤩 Beautiful UI
-- 👤 Account system with settings sync (hash based)
+- 👤 Account system with full data sync (hash encodes localStorage & IndexedDB, so you can backup/restore game saves)
 
 ## I am looking for contributors !
 
