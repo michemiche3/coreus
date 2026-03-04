@@ -1,12 +1,21 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: ["*", "https://coreus.vercel.app", "http://localhost:3000", "http://localhost:5000"],
+        methods: ["GET", "POST"],
+        credentials: false
+    },
+    transports: ['websocket', 'polling']
+});
 
-// serve static client files from "public" (we'll put chat.html there)
+app.use(cors());
+app.use(express.json());
 app.use(express.static(__dirname + '/public'));
 
 // simple API for history and management
