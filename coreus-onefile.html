@@ -426,7 +426,7 @@
             <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="hideChatView()">
                 <i class="fas fa-network-wired" style="color: white; font-size: 20px;"></i>
             </button>
-            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
             <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showGamesView()">
                 <i class="fas fa-gamepad" style="color: white; font-size: 20px;"></i>
             </button>
@@ -1802,7 +1802,7 @@
             if (currentAccount) {
                 currentAccount.settings = currentAccount.settings || {};
                 currentAccount.settings.theme = theme;
-                setCurrentAccount(currentAccount); // update snapshot and hash
+                setCurrentAccount(currentAccount); // will snapshot storage and update hash
             }
         }
 
@@ -1919,7 +1919,9 @@
                         if (!info.name) continue;
                         dbs[info.name] = await dumpDatabase(info.name);
                     }
-                } catch (e) {}
+                } catch (e) {
+                    // some browsers may reject
+                }
             }
             return dbs;
         }
@@ -1955,12 +1957,14 @@
 
         async function restoreStorage(snapshot) {
             if (!snapshot) return;
+            // wipe and restore localStorage
             try {
                 localStorage.clear();
                 for (let k in snapshot.localStorage) {
                     localStorage.setItem(k, snapshot.localStorage[k]);
                 }
             } catch (e) {}
+            // restore indexedDB
             if (snapshot.indexedDB) {
                 for (let dbName in snapshot.indexedDB) {
                     await restoreDatabase(dbName, snapshot.indexedDB[dbName]);
@@ -1968,6 +1972,7 @@
             }
         }
 
+        // trigger hashing when storage changes
         let suppressHashTrigger = false;
         let hashUpdateTimeout = null;
         function triggerHashUpdate() {
@@ -1978,6 +1983,7 @@
             }, 100);
         }
 
+        // monkey-patch localStorage methods
         ['setItem', 'removeItem', 'clear'].forEach(fn => {
             const orig = localStorage[fn];
             localStorage[fn] = function(...args) {
@@ -1986,6 +1992,8 @@
                 return res;
             };
         });
+
+        // monkey-patch IndexedDB write operations
         ['add', 'put', 'delete', 'clear'].forEach(fn => {
             const proto = IDBObjectStore && IDBObjectStore.prototype;
             if (proto && proto[fn]) {
@@ -2111,12 +2119,14 @@
                 alert('Invalid hash');
             }
         }
+            
+        
 
         function saveAccountUsername() {
             const name = document.getElementById('accUsername').value.trim();
             if (currentAccount) {
                 currentAccount.username = name || currentAccount.username;
-                setCurrentAccount(currentAccount);
+                setCurrentAccount(currentAccount); // will snapshot storage and update hash
                 // Update hash display after save completes
                 setTimeout(() => {
                     document.getElementById('accHash').value = encodeAccount(currentAccount);
@@ -2185,7 +2195,7 @@
         <div style="display:flex; justify-content:center; align-items:center; margin-bottom:40px;">
             <h2 class="title" style="font-size:4rem; margin-bottom:0; flex-grow:1; text-align:center;">Account</h2>
         </div>
-        <div style="max-width:600px; margin:0 auto; background: rgba(13,13,13,0.6); padding:3rem 2rem; border-radius:20px; border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(10px);">
+        <div style="max-width:600px; margin:0 auto; background: rgba(13,13,13,0.6); padding:3rem 2rem; border-radius:20px; border:1px solid rgba(56,56,56,0.8); backdrop-filter:blur(10px);">
             <div id="accountNotLogged">
                 <div style="margin-bottom:2rem;">
                     <label style="color:#ffffff; display:block; margin-bottom:0.8rem; font-weight:600; font-size:0.95rem;">Username (optional)</label>
@@ -2199,7 +2209,7 @@
                     <input id="loginHash" placeholder="Paste your account hash here..." style="width:100%; padding:1rem; background:rgba(255,255,255,0.05); color:var(--primary-text); border:2px solid #ffffff; border-radius:12px; font-size:1rem; outline:none; transition:all 0.3s; font-family:monospace;" onfocus="this.style.background='rgba(255,255,255,0.1)'" onblur="this.style.background='rgba(255,255,255,0.05)'">
                 </div>
                 <div style="margin-bottom:2rem;">
-                    <button style="width:100%; padding:1rem 2rem; background:#051B0B; border:2px solid #0d3b1f; border-radius:12px; color:#ffffff; font-weight:600; font-size:1rem; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(5,27,11,0.3);" onmouseover="this.style.transform='translateY(-2px);box-shadow:0 6px 20px rgba(5,27,11,0.4)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(5,27,11,0.3)'" onclick="loginWithHash()"><i class="fas fa-key"></i> Unlock Account</button>
+                    <button style="width:100%; padding:1rem 2rem; background:#ffffff; border:2px solid #ffffff; border-radius:12px; color:#000000; font-weight:600; font-size:1rem; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 15px rgba(5,27,11,0.3);" onmouseover="this.style.transform='translateY(-2px);box-shadow:0 6px 20px rgba(5,27,11,0.1)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(5,27,11,0.3)'" onclick="loginWithHash()"><i class="fas fa-key"></i> Login</button>
                 </div>
             </div>
             <div id="accountLogged" style="display:none;">
