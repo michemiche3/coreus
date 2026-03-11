@@ -1,9 +1,10 @@
-name: 'publish'
+name: 'Build binaries'
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,17 +19,15 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: install Rust stable
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
@@ -39,28 +38,25 @@ jobs:
       - uses: JonasKruckenberg/tauri-build@v1
         id: tauri_build
 
-      # The `artifacts` output can now be used by a different action to upload the artifacts
       - uses: actions/upload-artifact@v4
         with:
-          name: artifacts
+          name: build-${{ matrix.platform }}-run-${{ github.run_number }}
           path: "${{ join(fromJSON(steps.tauri_build.outputs.artifacts), '\n') }}"
 
   publish:
     needs: build-binaries
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      # Download the previously uploaded artifacts
-      - uses: actions/download-artifact@v3
-        id: download
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
         with:
-          name: artifacts
           path: artifacts
-      # And create a release with the artifacts attached
+
       - name: 'create release'
-        uses: softprops/action-gh-release@master
+        uses: softprops/action-gh-release@v1
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           draft: false
           files: ./artifacts/**/*
