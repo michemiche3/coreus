@@ -381,6 +381,34 @@
         </div>
     </div>
 
+    <div id="backendSelectModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3500; justify-content: center; align-items: center;">
+        <div style="background: var(--card-bg); padding: 2.5rem; border-radius: 15px; width: 90%; max-width: 450px; text-align: center; border: 1px solid var(--border-color); position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
+            <i class="fas fa-server" style="font-size: 3rem; color: var(--accent-color); margin-bottom: 1rem; display: block;"></i>
+            <h2 style="color: var(--primary-text); margin-bottom: 0.5rem; font-size: 1.5rem;">Choose Your Backend</h2>
+            <p style="color: var(--secondary-text); margin-bottom: 1.5rem; line-height: 1.5;">Select a game backend to use. This choice will be saved for future visits.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+                <button id="selectVrtxBtn" onclick="selectBackend('vrtx')" style="width: 100%; padding: 1.2rem; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid var(--accent-color); border-radius: 12px; color: var(--primary-text); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.8rem; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 25px rgba(76, 175, 80, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(76, 175, 80, 0.2)';">
+                    <i class="fas fa-cube" style="font-size: 1.3rem;"></i>
+                    <div style="text-align: left;">
+                        <div>VRTX</div>
+                        <div style="font-size: 0.75rem; font-weight: 400; opacity: 0.7;">Local - All games mobile-friendly</div>
+                    </div>
+                </button>
+                
+                <button id="selectSeleniteBtn" onclick="selectBackend('selenite')" style="width: 100%; padding: 1.2rem; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid #9d4edd; border-radius: 12px; color: var(--primary-text); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.8rem; box-shadow: 0 4px 15px rgba(157, 78, 221, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 25px rgba(157, 78, 221, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(157, 78, 221, 0.2)';">
+                    <i class="fas fa-moon" style="font-size: 1.3rem; color: #9d4edd;"></i>
+                    <div style="text-align: left;">
+                        <div style="color: #9d4edd;">Selenite</div>
+                        <div style="font-size: 0.75rem; font-weight: 400; opacity: 0.7;">External - 850+ games</div>
+                    </div>
+                </button>
+            </div>
+            
+            <p style="color: var(--secondary-text); font-size: 0.8rem; margin-top: 0.5rem;">You can change this anytime in Settings</p>
+        </div>
+    </div>
+
     <div class="proxy-frame" id="proxyFrame">
         <div class="frame-header">
             <span class="frame-url" id="frameUrl"></span>
@@ -498,13 +526,15 @@
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; color: var(--primary-text); margin-bottom: 0.5rem;">Backend:</label>
                     <select id="gameBackendSelect" onchange="setGameBackend(this.value)" style="width: 100%; padding: 0.8rem; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.3s;">
-                        <option value="auto">Auto fallback</option>
+                        <option value="auto">Auto fallback (VRTX)</option>
                         <option value="default">Default (local only)</option>
-                        <option value="https://coreus-assets-x44fhv591.onrender.com/">Mirror 1</option>
-                        <option value="https://coreus-assets-7hb65sx0h.onrender.com/">Mirror 2</option>
-                        <option value="https://coreus-assets-g6kx36vv0.vercel.app/">Mirror 3</option>
+                        <option value="selenite">Selenite (External)</option>
+                        <option value="https://coreus-assets-x44fhv591.onrender.com/">Mirror 1</option>
+                        <option value="https://coreus-assets-7hb65sx0h.onrender.com/">Mirror 2</option>
+                        <option value="https://coreus-assets-g6kx36vv0.vercel.app/">Mirror 3</option>
                     </select>
                 </div>
+            </div>
             </div>
 
             <div style="margin-bottom: 1.5rem;">
@@ -1098,7 +1128,16 @@
             'https://coreus-assets-7hb65sx0h.onrender.com/',
             'https://coreus-assets-g6kx36vv0.vercel.app/'
         ];
+        
+        // Selenite backend configuration
+        const seleniteConfig = {
+            baseUrl: 'https://noodlelover1alt.github.io',
+            gamesManifest: '/data/games.json',
+            gameFolderBase: '/semag'
+        };
+        
         let gameBackend = localStorage.getItem('gameBackend') || 'auto';
+        let toolsBackend = localStorage.getItem('toolsBackend') || 'auto';
         
         // Cloaking settings
         let cloakingOption = localStorage.getItem('cloakingOption') || 'No';
@@ -1112,6 +1151,53 @@
 
         var debugMode = false;
         const maxRetries = 3;
+
+        // Backend selection modal logic
+        function showBackendSelectModal() {
+            const modal = document.getElementById('backendSelectModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeBackendSelectModal() {
+            const modal = document.getElementById('backendSelectModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function selectBackend(backend) {
+            if (backend === 'selenite') {
+                localStorage.setItem('gameBackend', 'selenite');
+                localStorage.setItem('gameBackendChoice', 'selenite');
+                localStorage.setItem('toolsBackend', 'fallback');
+                toolsBackend = 'fallback';
+                gameBackend = 'selenite';
+            } else {
+                localStorage.setItem('gameBackend', 'auto');
+                localStorage.setItem('gameBackendChoice', 'vrtx');
+                gameBackend = 'auto';
+            }
+            closeBackendSelectModal();
+        }
+
+        // Check if first visit and show modal
+        function checkFirstVisit() {
+            const hasChosenBackend = localStorage.getItem('gameBackendChoice');
+            if (!hasChosenBackend) {
+                showBackendSelectModal();
+            } else {
+                // Restore previous choice
+                const savedChoice = localStorage.getItem('gameBackendChoice');
+                if (savedChoice === 'selenite') {
+                    gameBackend = 'selenite';
+                    toolsBackend = 'fallback';
+                } else {
+                    gameBackend = 'auto';
+                }
+            }
+        }
 
         async function applyCloaking(option) {
             try {
@@ -1281,7 +1367,19 @@
             const storedBackend = localStorage.getItem('gameBackend') || gameBackend || 'auto';
             gameBackend = storedBackend;
             const backendSelect = document.getElementById('gameBackendSelect');
-            if (backendSelect) backendSelect.value = gameBackend;
+            if (backendSelect) {
+                // Ensure valid option is selected
+                const validOptions = ['auto', 'default', 'selenite', 
+                    'https://coreus-assets-x44fhv591.onrender.com/',
+                    'https://coreus-assets-7hb65sx0h.onrender.com/',
+                    'https://coreus-assets-g6kx36vv0.vercel.app/'
+                ];
+                if (validOptions.includes(gameBackend)) {
+                    backendSelect.value = gameBackend;
+                } else {
+                    backendSelect.value = 'auto';
+                }
+            }
 
             // Load cloaking setting
             const storedCloak = localStorage.getItem('cloakingOption') || cloakingOption || 'No';
@@ -1312,7 +1410,17 @@
         function setGameBackend(backend) {
             gameBackend = backend;
             localStorage.setItem('gameBackend', gameBackend);
-            showStatus(`Game backend set to ${gameBackend}`, 'success');
+            
+            // If Selenite is selected, set tools to fallback since Selenite doesn't use tools
+            if (backend === 'selenite') {
+                localStorage.setItem('toolsBackend', 'fallback');
+                toolsBackend = 'fallback';
+                localStorage.setItem('gameBackendChoice', 'selenite');
+                showStatus(`Game backend set to Selenite (tools set to auto fallback)`, 'success');
+            } else {
+                localStorage.setItem('gameBackendChoice', 'vrtx');
+                showStatus(`Game backend set to ${gameBackend}`, 'success');
+            }
             setTimeout(hideStatus, 1200);
         }
 
@@ -1361,16 +1469,16 @@
 
         // showGamePopup now takes an optional popupTitle arg so the header can
         // display the human-readable name instead of the raw path.
-        function showGamePopup(gamePath, popupTitle) {
+        // isSelenite param indicates if loading from Selenite backend
+        function showGamePopup(gamePath, popupTitle, isSelenite = false) {
             previousView = 'games';
 
             document.getElementById('gamesView').style.display = 'none';
 
             document.getElementById('gamePopup').style.display = 'block';
 
-            const gameUrl = `./assets/${gamePath}`;
             // prefer the title if given, otherwise show the url
-            document.getElementById('gameUrlDisplay').textContent = popupTitle || gameUrl;
+            document.getElementById('gameUrlDisplay').textContent = popupTitle || gamePath;
 
             const gameIframe = document.getElementById('gameIframe');
             const gameLoadingOverlay = document.getElementById('gameLoadingOverlay');
@@ -1384,9 +1492,13 @@
                 gameLoadingOverlay.classList.add('hidden');
             };
 
-            // determine which hosts to try based on the user's backend choice
+            // Determine which hosts to try based on backend choice
             let hostList = [];
-            if (gameBackend === 'auto') {
+            
+            if (isSelenite || gameBackend === 'selenite') {
+                // Selenite: load directly from Selenite base URL (no fallback for Selenite)
+                hostList = [seleniteConfig.baseUrl];
+            } else if (gameBackend === 'auto') {
                 // try local first, then cycle through all known mirrors
                 hostList = ['./assets/', ...mirrorHosts];
             } else if (gameBackend === 'default') {
@@ -1640,70 +1752,99 @@
         }
 
         async function loadGames() {
-            try {
-                const response = await fetch('./assets/games.json');
-                const games = await response.json();
+            let games = [];
+            let isSelenite = false;
 
-                console.log('Games data:', games);
+            // Check if using Selenite backend
+            if (gameBackend === 'selenite') {
+                isSelenite = true;
+                try {
+                    const seleniteUrl = seleniteConfig.baseUrl + seleniteConfig.gamesManifest;
+                    const response = await fetch(seleniteUrl);
+                    const seleniteData = await response.json();
+                    
+                    // Convert Selenite format to internal format
+                    games = seleniteData.map(game => ({
+                        title: game.name,
+                        image: seleniteConfig.gameFolderBase + '/' + game.directory + '/' + game.image,
+                        gamePath: seleniteConfig.gameFolderBase + '/' + game.directory + '/index.html'
+                    }));
+                    console.log('Selenite Games loaded:', games.length);
+                } catch (error) {
+                    console.error('Error loading Selenite games:', error);
+                    document.getElementById('gamesGrid').innerHTML = '<p style="color: var(--primary-text); width: 100%; text-align: center;">Error loading games from Selenite backend.</p>';
+                    return;
+                }
+            } else {
+                // Standard VRTX/local loading
+                try {
+                    const response = await fetch('./assets/games.json');
+                    games = await response.json();
+                    console.log('Games data:', games);
+                } catch (error) {
+                    console.error('Error loading games:', error);
+                    document.getElementById('gamesGrid').innerHTML = '<p style="color: var(--primary-text); width: 100%; text-align: center;">Error loading games. Please try again later.</p>';
+                    return;
+                }
+            }
 
-                const gamesGrid = document.getElementById('gamesGrid');
-                gamesGrid.innerHTML = '';
+            const gamesGrid = document.getElementById('gamesGrid');
+            gamesGrid.innerHTML = '';
 
-                games.forEach(game => {
-                    const title = game.title || game.name || 'Unknown Game';
-                    const imagePath = game.image || game.img || '';
-                    const gamePath = game.gamePath || game.href || game.path || game.url || '';
+            games.forEach(game => {
+                const title = game.title || game.name || 'Unknown Game';
+                const imagePath = game.image || game.img || '';
+                const gamePath = game.gamePath || game.href || game.path || game.url || '';
 
-                    const gameCard = document.createElement('div');
-                    gameCard.className = 'game-card';
-                    gameCard.setAttribute('data-game-name', title.toLowerCase());
-                    gameCard.style.cssText = `
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        text-align: center;
-                        background: transparent;
-                        border-radius: 10px;
-                        padding: 15px;
-                        cursor: pointer;
-                        transition: transform 0.3s, background 0.3s;
-                    `;
+                const gameCard = document.createElement('div');
+                gameCard.className = 'game-card';
+                gameCard.setAttribute('data-game-name', title.toLowerCase());
+                gameCard.style.cssText = `
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    background: transparent;
+                    border-radius: 10px;
+                    padding: 15px;
+                    cursor: pointer;
+                    transition: transform 0.3s, background 0.3s;
+                `;
 
-                    gameCard.innerHTML = `
-                        <img src="./assets/${imagePath}"
-                             alt="${title}"
-                             style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
-                        <span style="color: var(--primary-text); font-size: 1.2rem; margin-top: 10px;">${title}</span>
-                    `;
+                // Use different base path for Selenite
+                const imageSrc = isSelenite ? (seleniteConfig.baseUrl + imagePath) : ('./assets/' + imagePath);
 
-                    gameCard.addEventListener('click', () => {
-                        if (gamePath) {
-                            showGamePopup(gamePath, title);
-                        }
-                    });
+                gameCard.innerHTML = `
+                    <img src="${imageSrc}"
+                         alt="${title}"
+                         style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
+                    <span style="color: var(--primary-text); font-size: 1.2rem; margin-top: 10px;">${title}</span>
+                `;
 
-                    gameCard.addEventListener('mouseenter', () => {
-                        gameCard.style.transform = 'scale(1.05)';
-                    });
-
-                    gameCard.addEventListener('mouseleave', () => {
-                        gameCard.style.transform = 'scale(1)';
-                    });
-
-                    gamesGrid.appendChild(gameCard);
+                gameCard.addEventListener('click', () => {
+                    if (gamePath) {
+                        showGamePopup(gamePath, title, isSelenite);
+                    }
                 });
 
-                // Add search functionality
-                const gamesSearchInput = document.getElementById('gamesSearchInput');
-                if (gamesSearchInput) {
-                    gamesSearchInput.addEventListener('input', function() {
-                        filterGames(this.value);
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading games:', error);
-                document.getElementById('gamesGrid').innerHTML = '<p style="color: var(--primary-text); width: 100%; text-align: center;">Error loading games. Please try again later.</p>';
+                gameCard.addEventListener('mouseenter', () => {
+                    gameCard.style.transform = 'scale(1.05)';
+                });
+
+                gameCard.addEventListener('mouseleave', () => {
+                    gameCard.style.transform = 'scale(1)';
+                });
+
+                gamesGrid.appendChild(gameCard);
+            });
+
+            // Add search functionality
+            const gamesSearchInput = document.getElementById('gamesSearchInput');
+            if (gamesSearchInput) {
+                gamesSearchInput.addEventListener('input', function() {
+                    filterGames(this.value);
+                });
             }
         }
 
@@ -1802,7 +1943,6 @@
             }
         }
 
-        // This function was added later - not sure if it's needed
         function checkUrlFormat(url) {
             var pattern = /^https?:\/\/(?:[-\w.])+(?:\:[0-9]+)?(?:\/(?:[\w\/_.])*(?:\?(?:[\w&=%.])*)?(?:\#(?:[\w.])*)?)?$/;
             return pattern.test(url);
@@ -2904,6 +3044,9 @@
             originalFaviconHref = originalFaviconHref || (document.querySelector('link[rel="icon"]') || {}).href;
             cloakingOption = localStorage.getItem('cloakingOption') || cloakingOption || 'No';
             applyCloaking(cloakingOption);
+
+            // Check for first visit and show backend selection modal
+            checkFirstVisit();
 
             const cloakingSelectSettings = document.getElementById('cloakingSelectSettings');
             if (cloakingSelectSettings) {
