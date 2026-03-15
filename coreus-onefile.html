@@ -2383,7 +2383,7 @@
         // Fetch visitor count from Simple Analytics
         function loadVisitorCount() {
             $.ajax({
-                url: 'https://simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews%2Cvisitors%2Chistogram',
+                url: 'https://simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews%2Cvisitors%2Chistogram&_=' + Date.now(),
                 dataType: 'jsonp',
                 success: function(data) {
                     const pageviews = data.pageviews || 0;
