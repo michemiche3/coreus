@@ -37,7 +37,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add coreus-onefile.html
-          git diff --cached --quiet || git commit -m "Auto-build coreus-onefile.html"
+          
+          # Get previous commit message
+          PREV_MSG=$(git log -1 --format="%s" ${{ github.event.before }})
+          
+          git diff --cached --quiet || git commit -m "chore: build onefile [$PREV_MSG]"
           git push
 
       - name: Determine if deploy is needed
