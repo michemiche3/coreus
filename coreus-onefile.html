@@ -750,20 +750,57 @@
         </div>
     </div>
 
-    <div id="aboutView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 2000; overflow-y: auto; padding: 20px 20px 100px 20px;">
+    <div id="aboutView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000; z-index: 2000; overflow-y: auto; padding: 20px 20px 100px 20px;">
         <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
-            <h2 class="title" style="font-size: 4rem; margin-bottom: 0; flex-grow: 1; text-align: center;">About Coreus</h2>
+            <h2 class="title" style="font-size: 4rem; margin-bottom: 0; flex-grow: 1; text-align: center; color: #fff;">About Coreus</h2>
         </div>
-        <div style="max-width: 800px; margin: 0 auto; background: var(--card-bg); padding: 2rem; border-radius: 10px;">
-            <p style="color: var(--primary-text); font-size: 1.2rem; line-height: 1.6; margin-bottom: 20px;">
-                You are running the singlefile version of Coreus. Get the latedt release here : <a href="https://noodlelover1.github.io/coreus/coreus-onefile.html" download=coreus-onefile.html style="color: var(--accent-color);">Download</a>
-            </p>
-            <p style="color: var(--primary-text); font-size: 1.2rem; line-height: 1.6; margin-bottom: 20px;">
-                Coreus is a complete UBG with an Ultraviolet proxy, 100 games, tools, that fits in a single HTML file. It was made by <a href="https://github.com/noodlelover1" style="color: var(--accent-color);">n00dle</a> with the amazing contribution of <a href="https://github.com/CoderandHacker69" style="color: var(--accent-color);">@CoderandHacker69</a>.
-            </p>
-            <p style="color: var(--primary-text); font-size: 1.2rem; line-height: 1.6;">
-                Since it is a single HTML file, it is completely unblockable : you can paste the code in a code editor, deploy it using Vercel, Netlify, Surge or any other static host and even convert it in a permanent "data:" URL. See all methods on the <a href="https://github.com/noodlelover1/coreus" style="color: var(--accent-color);">GitHub</a>
-            </p>
+        <div style="max-width: 800px; margin: 0 auto; background: #111111; padding: 2.5rem; border-radius: 15px; border: 2px solid #333; box-shadow: 0 10px 40px rgba(255,255,255,0.05);">
+            <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid #333;">
+                <p style="color: #fff; font-size: 1.15rem; line-height: 1.7; margin-bottom: 15px;">
+                    This is a deployment of Coreus (not the singlefile version). Get the singlefile here:
+                </p>
+                <a href="/coreus-onefile.html" download="coreus-onefile.html" style="display: inline-block; padding: 0.8rem 2rem; background: #fff; color: #000; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s;">
+                    <i class="fas fa-download" style="margin-right: 8px;"></i> Download
+                </a>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid #333;">
+                <p style="color: #fff; font-size: 1.15rem; line-height: 1.7; margin-bottom: 15px;">
+                    Coreus is a complete unblocked browser game (UBG) with an Ultraviolet proxy, 100+ games, and tools — all in a single HTML file.
+                </p>
+                <p style="color: #aaa; font-size: 1rem; line-height: 1.6;">
+                    Made by <a href="https://github.com/noodlelover1" style="color: #fff; text-decoration: none; font-weight: 600;">n00dle</a> with contributions from <a href="https://github.com/CoderandHacker69" style="color: #fff; text-decoration: none; font-weight: 600;">@CoderandHacker69</a>
+                </p>
+            </div>
+            
+            <div>
+                <p style="color: #fff; font-size: 1.15rem; line-height: 1.7; margin-bottom: 15px;">
+                    Since it's a single HTML file, it's completely unblockable. Paste the code in a code editor, deploy using Vercel, Netlify, Surge, or any static host — even convert it to a permanent "data:" URL.
+                </p>
+                <a href="https://github.com/noodlelover1/coreus" target="_blank" style="display: inline-block; padding: 0.8rem 2rem; background: #333; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; border: 2px solid #555; transition: all 0.3s;">
+                    <i class="fab fa-github" style="margin-right: 8px;"></i> View on GitHub
+                </a>
+            </div>
+            
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #333;">
+                <h3 style="color: #fff; font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem;">Privacy Policy</h3>
+                <div style="color: #aaa; font-size: 1rem; line-height: 1.7;">
+					<div style="color: #fff; font-size: 1.15rem; line-height: 1.7; margin-bottom: 15px;">
+                    <p style="color: #fff; font-size: 1.15rem; line-height: 1.7; margin-bottom: 15px;">
+                        When you visit the website, we may collect :
+                        <li> Your country (IP based)</li>
+                        <li> What page you visited</li>
+                        <li> How many time did you spend on the page</li>
+                        <li> The numbers of visits</li>
+                        We use Simple Analytics for that, that is a privacy-focused analytics service.
+                        <br>We do not use cookies.
+                    </p>
+                    </div>
+                    <p>
+                        For questions or concerns about this privacy policy, please contact us through GitHub.
+                    </p>
+                </div>
+            </div>
         </div>
 
         <div class="bottom-navbar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 2001; border: 1px solid rgba(255,255,255,0.1);">
