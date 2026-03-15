@@ -22,12 +22,13 @@
 - 🎮 950+ GAMES !!!
 - 🌐 Ultraviolet proxy
 - 💬 Live chatroom
+- 🏆 Achievements system
 - 🤖 AI chatbot with 4 AI models
 - 🥷 Tab cloaking (disguise + about:blank)
 - 🔓 Single file, completely unblockable
 - 🚫 No ads
 - 🤩 Beautiful UI
-- 👤 Account system with full data sync (hash encodes localStorage & IndexedDB, so you can backup/restore game saves)
+- 👤 Account system with settings sync
 
 ## I am looking for contributors !
 
@@ -141,14 +142,8 @@ This code is under AGPL v3.0 License, wich means that you can use the code but y
 
 See the full license in the LICENSE file
 ## Devs TODO list
-- [x] Create some mirrors for singlefile version assets (coreus-assets) repo using various hosting services, and then integrate a fallback system for games in singlefile with the created mirrors
-- [x] When a game or a tool is open display the game or tool name instead of the path
+
+- [ ] Account achievements sync
 - [ ] Better proxy integration + new APIs
 - [ ] Globally more features
-- [x] Ping external services (like AI API) and display tabs only if they are accessible - thx to coderandhacker
-- [x] A full version, with all games assets, ready to be deployed (not singlefile ofc) - PR #3, huge thanks to @CoderandHacker69
-- [x] Fix some loading time bugs
-- [x] Less dirty code
-- [x] Add live chat
-- [x] Custom loading animation
-- [x] Add more comments in code
+
