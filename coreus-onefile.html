@@ -2382,7 +2382,7 @@
         // Fetch visitor count from Simple Analytics
         async function loadVisitorCount() {
             try {
-                const response = await fetch('https://dashboard.simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews%2Cvisitors%2Chistogram');
+                const response = await fetch('https://simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews%2Cvisitors%2Chistogram');
                 const data = await response.json();
                 const pageviews = data.pageviews || 0;
                 const visitorEl = document.getElementById('visitorCounter');
