@@ -442,6 +442,10 @@
             <i class="fas fa-info-circle" style="color: white; font-size: 20px;"></i>
         </button>
         <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAchievementsView()">
+            <i class="fas fa-trophy" style="color: white; font-size: 20px;"></i>
+        </button>
+        <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
         <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showSettingsView()">
             <i class="fas fa-cog" style="color: white; font-size: 20px;"></i>
         </button>
@@ -799,8 +803,26 @@
             </div>
         </div>
     </div>
+
+    <div id="achievementsView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000; z-index: 2000; overflow-y: auto; padding: 20px 20px 100px 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
+            <h2 class="title" style="font-size: 4rem; margin-bottom: 0; flex-grow: 1; text-align: center; color: #fff;">Achievements</h2>
+        </div>
+        <div id="achievements-list" style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px;">
+        </div>
+    </div>
+
+    <div id="achievement-notification" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); border: 2px solid #444; border-radius: 12px; padding: 15px 25px; z-index: 9999; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="achievement-emoji" style="font-size: 2rem;"></span>
+            <div>
+                <div style="color: #fff; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Achievement Unlocked!</div>
+                <div id="achievement-name" style="color: #fff; font-size: 1.1rem; font-weight: 600;"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
-  
   function savePanicSettings() {
     const key = document.getElementById("panicKeyInput").value.trim();
     const url = document.getElementById("panicUrlInput").value.trim();
@@ -824,6 +846,7 @@
     if (u && document.getElementById("panicUrlInput")) {
       document.getElementById("panicUrlInput").value = u;
     }
+    checkFirstVisit();
   });
 
   
@@ -1068,6 +1091,7 @@
             } else {
                 // It's a search query, use DuckDuckGo
                 targetUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(inputUrl);
+                trackSearch();
             }
             
             // Open proxy view and load URL there
@@ -1085,6 +1109,9 @@
             document.getElementById('aiView').style.display = 'none';
             document.getElementById('accountView').style.display = 'none';
             document.getElementById('proxyView').style.display = 'block';
+            
+            // Track proxy visit for achievements
+            trackProxyVisit(url);
             
             // Load the URL in the proxy browser
             setTimeout(() => {
@@ -1471,6 +1498,7 @@
             document.getElementById('aiView').style.display = 'none';
             document.getElementById('accountView').style.display = 'none';
             document.getElementById('proxyView').style.display = 'none';
+            document.getElementById('achievementsView').style.display = 'none';
 
             document.getElementById('gamesView').style.display = 'block';
 
@@ -1502,6 +1530,9 @@
 
             // prefer the title if given, otherwise show the url
             document.getElementById('gameUrlDisplay').textContent = popupTitle || gamePath;
+
+            // Track game play for achievements
+            trackGamePlay(popupTitle);
 
             const gameIframe = document.getElementById('gameIframe');
             const gameLoadingOverlay = document.getElementById('gameLoadingOverlay');
@@ -1604,6 +1635,7 @@
             document.getElementById('aiView').style.display = 'none';
             document.getElementById('accountView').style.display = 'none';
             document.getElementById('proxyView').style.display = 'none';
+            document.getElementById('achievementsView').style.display = 'none';
 
             document.getElementById('aboutView').style.display = 'block';
 
@@ -1618,6 +1650,181 @@
             document.getElementById('settingsView').style.display = 'none';
             document.getElementById('aiView').style.display = 'none';
             document.getElementById('accountView').style.display = 'none';
+            document.getElementById('achievementsView').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        const achievements = [
+            { id: 'welcome', name: 'Welcome!', description: 'Open Coreus for the first time', icon: '🏆', unlocked: false },
+            { id: 'clicker_master', name: 'Click Click Click!', description: 'Play 2 different clicker games', icon: '💰', unlocked: false },
+            { id: 'game_explorer', name: 'Game Explorer', description: 'Play 5 different games', icon: '🎮', unlocked: false },
+            { id: 'game_enthusiast', name: 'Game Enthusiast', description: 'Play 10 different games', icon: '🌟', unlocked: false },
+            { id: 'proxy_surfer', name: 'Proxy Surfer', description: 'Visit 3 different websites using the proxy', icon: '🌐', unlocked: false },
+            { id: 'search_master', name: 'Search Master', description: 'Perform 5 searches', icon: '🔍', unlocked: false },
+            { id: 'chatty', name: 'Getting Social', description: 'Send your first message in chat', icon: '💬', unlocked: false },
+            { id: 'tool_user', name: 'Tool User', description: 'Use 3 different tools', icon: '🔧', unlocked: false }
+        ];
+
+        function getUnlockedAchievements() {
+            const saved = localStorage.getItem('coreus_achievements');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveAchievements(unlocked) {
+            localStorage.setItem('coreus_achievements', JSON.stringify(unlocked));
+        }
+
+        function unlockAchievement(achievementId) {
+            const unlocked = getUnlockedAchievements();
+            if (!unlocked.includes(achievementId)) {
+                unlocked.push(achievementId);
+                saveAchievements(unlocked);
+                const achievement = achievements.find(a => a.id === achievementId);
+                showAchievementNotification(achievement);
+            }
+        }
+
+        function showAchievementNotification(achievement) {
+            const notification = document.getElementById('achievement-notification');
+            document.getElementById('achievement-emoji').textContent = achievement.icon;
+            document.getElementById('achievement-name').textContent = achievement.name;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+
+        function renderAchievements() {
+            const container = document.getElementById('achievements-list');
+            const unlocked = getUnlockedAchievements();
+            container.innerHTML = '';
+            achievements.forEach(achievement => {
+                const isUnlocked = unlocked.includes(achievement.id);
+                const div = document.createElement('div');
+                div.style.cssText = 'background: #111111; padding: 20px; border-radius: 12px; border: 2px solid #333; display: flex; align-items: center; gap: 15px; transition: all 0.3s;';
+                div.innerHTML = `
+                    <div style="font-size: 2.5rem; ${isUnlocked ? '' : 'filter: grayscale(100%); opacity: 0.4;'}">${achievement.icon}</div>
+                    <div style="flex: 1;">
+                        <div style="color: ${isUnlocked ? '#fff' : '#666'}; font-size: 1.1rem; font-weight: 600;">${achievement.name}</div>
+                        <div style="color: ${isUnlocked ? '#aaa' : '#444'}; font-size: 0.95rem;">${isUnlocked ? achievement.description : '???'}</div>
+                    </div>
+                    ${isUnlocked ? '<div style="color: #4CAF50; font-size: 1.2rem;"><i class="fas fa-check-circle"></i></div>' : '<div style="color: #444; font-size: 1.2rem;"><i class="fas fa-lock"></i></div>'}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function showAchievementsView() {
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+            document.getElementById('accountView').style.display = 'none';
+            document.getElementById('proxyView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+
+            renderAchievements();
+            document.getElementById('achievementsView').style.display = 'block';
+            previousView = 'achievements';
+        }
+
+        function trackGamePlay(gameName) {
+            if (!gameName) return;
+            
+            const playedGames = JSON.parse(localStorage.getItem('coreus_played_games') || '[]');
+            if (!playedGames.includes(gameName)) {
+                playedGames.push(gameName);
+                localStorage.setItem('coreus_played_games', JSON.stringify(playedGames));
+            }
+            
+            const unlocked = getUnlockedAchievements();
+            
+            // Game Explorer - Play 5 different games
+            if (playedGames.length >= 5 && !unlocked.includes('game_explorer')) {
+                unlockAchievement('game_explorer');
+            }
+            
+            // Game Enthusiast - Play 10 different games
+            if (playedGames.length >= 10 && !unlocked.includes('game_enthusiast')) {
+                unlockAchievement('game_enthusiast');
+            }
+            
+            // Click Click Click! - Play 2 different clicker games
+            const clickerGames = playedGames.filter(g => g.toLowerCase().includes('clicker'));
+            if (clickerGames.length >= 2 && !unlocked.includes('clicker_master')) {
+                unlockAchievement('clicker_master');
+            }
+        }
+
+        function trackProxyVisit(url) {
+            if (!url) return;
+            
+            const visitedUrls = JSON.parse(localStorage.getItem('coreus_proxy_visits') || '[]');
+            const domain = new URL(url).hostname;
+            if (!visitedUrls.includes(domain)) {
+                visitedUrls.push(domain);
+                localStorage.setItem('coreus_proxy_visits', JSON.stringify(visitedUrls));
+            }
+            
+            const unlocked = getUnlockedAchievements();
+            if (visitedUrls.length >= 3 && !unlocked.includes('proxy_surfer')) {
+                unlockAchievement('proxy_surfer');
+            }
+        }
+
+        function trackSearch() {
+            const searchCount = parseInt(localStorage.getItem('coreus_search_count') || '0') + 1;
+            localStorage.setItem('coreus_search_count', searchCount.toString());
+            
+            const unlocked = getUnlockedAchievements();
+            if (searchCount >= 5 && !unlocked.includes('search_master')) {
+                unlockAchievement('search_master');
+            }
+        }
+
+        function trackToolUse(toolName) {
+            if (!toolName) return;
+            
+            const usedTools = JSON.parse(localStorage.getItem('coreus_used_tools') || '[]');
+            if (!usedTools.includes(toolName)) {
+                usedTools.push(toolName);
+                localStorage.setItem('coreus_used_tools', JSON.stringify(usedTools));
+            }
+            
+            const unlocked = getUnlockedAchievements();
+            if (usedTools.length >= 3 && !unlocked.includes('tool_user')) {
+                unlockAchievement('tool_user');
+            }
+        }
+
+        function trackChatMessage() {
+            const unlocked = getUnlockedAchievements();
+            if (!unlocked.includes('chatty')) {
+                unlockAchievement('chatty');
+            }
+        }
+
+        function checkFirstVisit() {
+            const hasVisited = localStorage.getItem('coreus_has_visited');
+            if (!hasVisited) {
+                localStorage.setItem('coreus_has_visited', 'true');
+                setTimeout(() => {
+                    unlockAchievement('welcome');
+                }, 1000);
+            }
+        }
+
+        function hideAchievementsView() {
+            document.getElementById('achievementsView').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+            document.getElementById('accountView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
             document.querySelector('.container').style.display = 'block';
         }
 
@@ -1630,6 +1837,7 @@
             document.getElementById('aiView').style.display = 'none';
             document.getElementById('accountView').style.display = 'none';
             document.getElementById('proxyView').style.display = 'none';
+            document.getElementById('achievementsView').style.display = 'none';
 
             document.getElementById('toolsView').style.display = 'block';
 
@@ -1739,6 +1947,9 @@
 
             const toolUrl = `./assets/${toolPath}`;
             document.getElementById('gameUrlDisplay').textContent = popupTitle || toolUrl;
+
+            // Track tool use for achievements
+            trackToolUse(popupTitle);
 
             const gameIframe = document.getElementById('gameIframe');
                     const gameLoadingOverlay = document.getElementById('gameLoadingOverlay');
@@ -1890,7 +2101,7 @@
         // helper that hides every view and the main container
         function hideAllViews() {
             document.querySelector('.container').style.display = 'none';
-            ['gamesView','toolsView','aboutView','settingsView','chatView','aiView','accountView', 'proxyView'].forEach(id => {
+            ['gamesView','toolsView','aboutView','settingsView','chatView','aiView','accountView', 'proxyView', 'achievementsView'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'none';
             });
@@ -1930,6 +2141,7 @@
             document.getElementById('settingsView').style.display = 'none';
             document.getElementById('aiView').style.display = 'none';
             document.getElementById('accountView').style.display = 'none';
+            document.getElementById('achievementsView').style.display = 'none';
             document.getElementById('proxyView').style.display = 'block';
         }
 
@@ -2045,6 +2257,7 @@
             document.getElementById('aiView').style.display = 'none';
             document.getElementById('accountView').style.display = 'none';
             document.getElementById('proxyView').style.display = 'none';
+            document.getElementById('achievementsView').style.display = 'none';
 
             // show settings view
             document.getElementById('settingsView').style.display = 'block';
@@ -2608,6 +2821,7 @@
             document.getElementById('settingsView').style.display = 'none';
             document.getElementById('accountView').style.display = 'none';
             document.getElementById('proxyView').style.display = 'none';
+            document.getElementById('achievementsView').style.display = 'none';
 
             // sho the ai
             document.getElementById('aiView').style.display = 'block';
