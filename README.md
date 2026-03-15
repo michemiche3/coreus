@@ -106,7 +106,7 @@ data:text/html;charset=utf-8,%3C!DOCTYPE%20html%3E%0A%3Chtml%20lang%3D%22en%22%3
 ```
 ## Supporting the project
 
-Currently, the best way to support the project is to contribute
+Currently, the best way to support the project is to contribute. Also, you can share this site to your friends and leave a star !!
 
 ## Contributing
 
@@ -143,7 +143,6 @@ This code is under AGPL v3.0 License, wich means that you can use the code but y
 See the full license in the LICENSE file
 ## Devs TODO list
 
-- [ ] Account achievements sync
-- [ ] Better proxy integration + new APIs
-- [ ] Globally more features
+- [ ] Music feature ???
+- [ ] More proxy APIs
 
