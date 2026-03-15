@@ -7,6 +7,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000'/><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
         :root {
             --primary-bg: #000000;
@@ -2380,22 +2381,24 @@
         });
 
         // Fetch visitor count from Simple Analytics
-        async function loadVisitorCount() {
-            try {
-                const response = await fetch('https://simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews%2Cvisitors%2Chistogram');
-                const data = await response.json();
-                const pageviews = data.pageviews || 0;
-                const visitorEl = document.getElementById('visitorCounter');
-                if (visitorEl) {
-                    visitorEl.textContent = 'You are the ' + pageviews.toLocaleString() + 'th visitor this month.';
+        function loadVisitorCount() {
+            $.ajax({
+                url: 'https://simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews%2Cvisitors%2Chistogram',
+                dataType: 'jsonp',
+                success: function(data) {
+                    const pageviews = data.pageviews || 0;
+                    const visitorEl = document.getElementById('visitorCounter');
+                    if (visitorEl) {
+                        visitorEl.textContent = 'You are the ' + pageviews.toLocaleString() + 'th visitor this month.';
+                    }
+                },
+                error: function() {
+                    const visitorEl = document.getElementById('visitorCounter');
+                    if (visitorEl) {
+                        visitorEl.style.display = 'none';
+                    }
                 }
-            } catch (error) {
-                console.log('Could not load visitor count');
-                const visitorEl = document.getElementById('visitorCounter');
-                if (visitorEl) {
-                    visitorEl.style.display = 'none';
-                }
-            }
+            });
         }
 
         // Load visitor count on page load
@@ -3193,4 +3196,3 @@ document.addEventListener('DOMContentLoaded', checkAndPermanentDelete);
 <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt="" referrerpolicy="no-referrer-when-downgrade"/></noscript>
 </body>
 </html>
-
