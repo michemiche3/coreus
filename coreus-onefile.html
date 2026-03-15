@@ -1629,6 +1629,11 @@
                 saveAchievements(unlocked);
                 const achievement = achievements.find(a => a.id === achievementId);
                 showAchievementNotification(achievement);
+                
+                if (currentAccount) {
+                    currentAccount.achievements = unlocked;
+                    setCurrentAccount(currentAccount);
+                }
             }
         }
 
@@ -1701,6 +1706,11 @@
             if (clickerGames.length >= 2 && !unlocked.includes('clicker_master')) {
                 unlockAchievement('clicker_master');
             }
+            
+            if (currentAccount) {
+                currentAccount.playedGames = playedGames;
+                setCurrentAccount(currentAccount);
+            }
         }
 
         function trackProxyVisit(url) {
@@ -1717,6 +1727,11 @@
             if (visitedUrls.length >= 3 && !unlocked.includes('proxy_surfer')) {
                 unlockAchievement('proxy_surfer');
             }
+            
+            if (currentAccount) {
+                currentAccount.proxyVisits = visitedUrls;
+                setCurrentAccount(currentAccount);
+            }
         }
 
         function trackSearch() {
@@ -1726,6 +1741,11 @@
             const unlocked = getUnlockedAchievements();
             if (searchCount >= 5 && !unlocked.includes('search_master')) {
                 unlockAchievement('search_master');
+            }
+            
+            if (currentAccount) {
+                currentAccount.searchCount = searchCount;
+                setCurrentAccount(currentAccount);
             }
         }
 
@@ -1741,6 +1761,11 @@
             const unlocked = getUnlockedAchievements();
             if (usedTools.length >= 3 && !unlocked.includes('tool_user')) {
                 unlockAchievement('tool_user');
+            }
+            
+            if (currentAccount) {
+                currentAccount.usedTools = usedTools;
+                setCurrentAccount(currentAccount);
             }
         }
 
@@ -2447,8 +2472,16 @@
 
         async function setCurrentAccount(acc) {
             currentAccount = acc;
-            if (acc) await saveAccount(acc);
-            else localStorage.removeItem('coreus_account');
+            if (acc) {
+                acc.achievements = getUnlockedAchievements();
+                acc.playedGames = JSON.parse(localStorage.getItem('coreus_played_games') || '[]');
+                acc.usedTools = JSON.parse(localStorage.getItem('coreus_used_tools') || '[]');
+                acc.proxyVisits = JSON.parse(localStorage.getItem('coreus_proxy_visits') || '[]');
+                acc.searchCount = parseInt(localStorage.getItem('coreus_search_count') || '0');
+                await saveAccount(acc);
+            } else {
+                localStorage.removeItem('coreus_account');
+            }
             updateAccountView();
         }
 
@@ -2504,7 +2537,15 @@
             if (!name) {
                 name = 'guest' + Math.floor(1000 + Math.random()*9000);
             }
-            const acc = { username: name, settings: { theme: getCurrentTheme() } };
+            const acc = { 
+                username: name, 
+                settings: { theme: getCurrentTheme() },
+                achievements: getUnlockedAchievements(),
+                playedGames: JSON.parse(localStorage.getItem('coreus_played_games') || '[]'),
+                usedTools: JSON.parse(localStorage.getItem('coreus_used_tools') || '[]'),
+                proxyVisits: JSON.parse(localStorage.getItem('coreus_proxy_visits') || '[]'),
+                searchCount: parseInt(localStorage.getItem('coreus_search_count') || '0')
+            };
             await setCurrentAccount(acc);
             alert('Account created! Your hash is:\n' + encodeAccount(acc));
         }
@@ -2519,6 +2560,22 @@
             if (acc && acc.username) {
 
                 await setCurrentAccount(acc);
+
+                if (acc.achievements) {
+                    localStorage.setItem('coreus_achievements', JSON.stringify(acc.achievements));
+                }
+                if (acc.playedGames) {
+                    localStorage.setItem('coreus_played_games', JSON.stringify(acc.playedGames));
+                }
+                if (acc.usedTools) {
+                    localStorage.setItem('coreus_used_tools', JSON.stringify(acc.usedTools));
+                }
+                if (acc.proxyVisits) {
+                    localStorage.setItem('coreus_proxy_visits', JSON.stringify(acc.proxyVisits));
+                }
+                if (acc.searchCount) {
+                    localStorage.setItem('coreus_search_count', acc.searchCount.toString());
+                }
 
                 try {
                     const storageSaved = localStorage.getItem('coreus_account_storage');
