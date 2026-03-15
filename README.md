@@ -19,7 +19,7 @@
 - https://github.com/l3br00n/lebron STOLE MY CODE AND VIOLATED THE AGPL 3.0 LICENSE TERMS. 
 ## Features
 
-- 🎮 100 Games
+- 🎮 950+ GAMES !!!
 - 🌐 Ultraviolet proxy
 - 💬 Live chatroom
 - 🤖 AI chatbot with 4 AI models
