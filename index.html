@@ -145,7 +145,6 @@
             pointer-events: none;
         }
 
-
         #gamesSearchInput, #toolsSearchInput {
             transition: all 0.3s ease !important;
         }
@@ -221,7 +220,6 @@
             z-index: 1000;
             background: var(--primary-bg);
         }
-
 
         .loading-overlay {
             position: absolute;
@@ -301,7 +299,6 @@
             background: var(--primary-text);
         }
 
-
         .proxy-iframe::after {
             content: '';
             position: absolute;
@@ -358,9 +355,9 @@
     </div>
 
     <div id="proxyView" style="display: none; position: fixed; top: 10px; left: 10px; right: 10px; bottom: 90px; background: #1a1a1a; z-index: 2000; overflow: hidden; border-radius: 12px;">
-        <!-- Chrome-like browser header -->
+        
         <div style="background: #2d2d2d; border-radius: 12px 12px 0 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #3d3d3d;">
-            <!-- Tab bar -->
+            
             <div style="display: flex; align-items: center; gap: 8px; background: #1a1a1a; border-radius: 8px; padding: 6px 10px;">
                 <div id="proxyTab" style="flex: 1; background: #3d3d3d; border-radius: 6px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; max-width: 300px;">
                     <i class="fas fa-globe" style="color: #28c840; font-size: 12px;"></i>
@@ -368,40 +365,36 @@
                     <i class="fas fa-times" style="color: #888; font-size: 10px; cursor: pointer;" onclick="proxyClearUrl()"></i>
                 </div>
             </div>
-            
-            <!-- Navigation bar -->
+
             <div style="display: flex; align-items: center; gap: 8px;">
-                <!-- Back button -->
+                
                 <button onclick="proxyGoBack()" style="background: none; border: none; color: #fff; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
                     <i class="fas fa-arrow-left" style="font-size: 14px;"></i>
                 </button>
-                <!-- Forward button -->
+                
                 <button onclick="proxyGoForward()" style="background: none; border: none; color: #fff; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
                     <i class="fas fa-arrow-right" style="font-size: 14px;"></i>
                 </button>
-                <!-- Reload button -->
+                
                 <button onclick="proxyReload()" style="background: none; border: none; color: #fff; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
                     <i class="fas fa-redo" style="font-size: 14px;"></i>
                 </button>
-                
-                <!-- URL bar -->
+
                 <div style="flex: 1; background: #1a1a1a; border-radius: 20px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; border: 1px solid #3d3d3d;">
                     <i id="proxyLockIcon" class="fas fa-lock" style="color: #28c840; font-size: 11px;"></i>
                     <input type="text" id="proxyUrlInput" placeholder="Search or enter URL..." style="background: transparent; border: none; color: #fff; width: 100%; font-size: 13px; outline: none;" onkeypress="if(event.key==='Enter'){proxyNavigate();}">
                 </div>
-                
-                <!-- Go button -->
+
                 <button onclick="proxyNavigate()" style="background: #3d3d3d; border: none; color: #fff; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 13px;">Go</button>
             </div>
         </div>
-        
-        <!-- Browser content area -->
+
         <div id="proxyBrowserFrame" style="width: 100%; height: 100%; background: #fff; border-radius: 0 0 12px 12px; overflow: hidden; position: relative;">
             <iframe id="proxyIframe" style="width: 100%; height: 100%; border: none;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"></iframe>
             <div id="proxyLoading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; background: rgba(0,0,0,0.8); padding: 20px 30px; border-radius: 10px;">
                 <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #fff;"></i>
             </div>
-            <!-- Empty state -->
+            
             <div id="proxyEmptyState" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #666;">
                 <i class="fas fa-globe" style="font-size: 48px; margin-bottom: 15px; color: #888;"></i>
                 <p style="font-size: 14px;">Enter a URL to browse the web</p>
@@ -695,8 +688,6 @@
   </div>
 </div>
 
-
-
                 <div style="margin-top: 1rem; border-top: 2px solid #333; padding-top: 1rem;">
                     <h4 style="color: #fff; margin-bottom: 0.5rem; font-weight: 600;">about:blank cloaking</h4>
                     <div style="display:flex; gap:10px; align-items:center;">
@@ -705,8 +696,6 @@
                 </div>
             </div>
 
-
-             
 <<<<<<< HEAD
  
 =======
@@ -836,7 +825,6 @@
     localStorage.setItem("panicUrl", url);
   }
 
-  
   window.addEventListener("DOMContentLoaded", () => {
     const k = localStorage.getItem("panicKey");
     const u = localStorage.getItem("panicUrl");
@@ -849,13 +837,11 @@
     checkFirstVisit();
   });
 
-  
   document.addEventListener("keydown", (e) => {
     const panicKey = localStorage.getItem("panicKey");
     const panicUrl = localStorage.getItem("panicUrl");
     if (!panicKey || !panicUrl) return;
 
-    
     const tag = document.activeElement?.tagName?.toLowerCase();
     if (tag === "input" || tag === "textarea") return;
 
@@ -870,7 +856,6 @@
     }
   });
 </script>
-
 
     <script>
         let currentProxyIndex = 0;
@@ -889,7 +874,7 @@
 
         function isValidUrl(string) {
             try {
-                // Add protocol if missing
+
                 if (!string.startsWith('http://') && !string.startsWith('https://')) {
                     string = 'https://' + string;
                 }
@@ -948,7 +933,7 @@
             proxyBtn.textContent = 'Connecting...';
 
             if (proxyMode === 'single') {
-                // Use only the selected single proxy
+
                 showStatus(`Using selected proxy: ${selectedProxy}`, 'loading');
 
                 const works = await testProxy(selectedProxy, targetUrl);
@@ -966,7 +951,7 @@
                     return;
                 }
             } else {
-                // Use fallback mode (try all proxies in sequence)
+
                 for (let i = 0; i < proxyAPIs.length; i++) {
                     const proxyUrl = proxyAPIs[i];
                     showStatus(`Trying proxy ${i + 1}/${proxyAPIs.length}: ${proxyUrl}`, 'loading');
@@ -982,7 +967,6 @@
                     }
                 }
 
-                // All proxies failed
                 showStatus('All proxy services are currently unavailable. Please try again later.', 'error');
                 proxyBtn.disabled = false;
                 proxyBtn.textContent = 'Access via Proxy';
@@ -1078,23 +1062,21 @@
                 return;
             }
 
-            // Check if input contains a domain name with common TLDs
             const domainPattern = /\.(com|org|net|io|gov|edu|int|mil|arpa|co|uk|de|jp|fr|au|ca|ru|br|in|it|nl|se|no|dk|fi|es|pl|be|ch|at|cz|ie|pt|hu|gr|il|cn|hk|kr|sg|mx|ar|cl|pe|ve|uy|py|bo|ec|gt|hn|sv|ni|cr|pa|do|cu|jm|ht|bs|bz|sr|gy|fk|gg|je|im|ai|bm|ky|lc|vc|ag|gd|kn|ms|tc|vg|vi|pr|as|gu|mp|pw|fm|mh|ws|to|vu|sb|nc|pf|wf|ck|nu|tk|pn|nf|cc|cx|hm|aq|gs|fun|lol|tf)$/i;
             
             if (domainPattern.test(inputUrl)) {
-                // It's a domain, add https:// if not present
+
                 if (!inputUrl.startsWith('http://') && !inputUrl.startsWith('https://')) {
                     targetUrl = 'https://' + inputUrl;
                 } else {
                     targetUrl = inputUrl;
                 }
             } else {
-                // It's a search query, use DuckDuckGo
+
                 targetUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(inputUrl);
                 trackSearch();
             }
-            
-            // Open proxy view and load URL there
+
             showProxyViewDirect(targetUrl);
         }
 
@@ -1109,13 +1091,11 @@
             document.getElementById('aiView').style.display = 'none';
             document.getElementById('accountView').style.display = 'none';
             document.getElementById('proxyView').style.display = 'block';
-            
-            // Track proxy visit for achievements
+
             trackProxyVisit(url);
-            
-            // Load the URL in the proxy browser
+
             setTimeout(() => {
-                // Add to history
+
                 if (proxyHistoryIndex < proxyHistory.length - 1) {
                     proxyHistory = proxyHistory.slice(0, proxyHistoryIndex + 1);
                 }
@@ -1143,21 +1123,18 @@
             return true;
         }
 
-        // Handle Enter key in input
         document.getElementById('urlInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 startProxy();
             }
         });
 
-        // Handle Escape key to close proxy
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeProxy();
             }
         });
 
-        // List of proxy API endpoints
         const proxyAPIs = [
             'https://embeddr.rhw.one/embed#',
             'https://ev2.rhw.one/active/embed#',
@@ -1167,18 +1144,15 @@
             'https://yacdn.org/proxy/'
         ];
 
-        // Settings variables
         let proxyMode = 'fallback';
         let selectedProxy = proxyAPIs[0];
-        
-        // Game backend settings (default/auto/mirror urls)
+
         const mirrorHosts = [
             'https://coreus-assets-x44fhv591.onrender.com/',
             'https://coreus-assets-7hb65sx0h.onrender.com/',
             'https://coreus-assets-g6kx36vv0.vercel.app/'
         ];
-        
-        // Selenite backend configuration
+
         const seleniteConfig = {
             baseUrl: 'https://noodlelover1alt.github.io',
             gamesManifest: '/data/games.json',
@@ -1187,8 +1161,7 @@
         
         let gameBackend = localStorage.getItem('gameBackend') || 'auto';
         let toolsBackend = localStorage.getItem('toolsBackend') || 'auto';
-        
-        // Cloaking settings
+
         let cloakingOption = localStorage.getItem('cloakingOption') || 'No';
         const cloakingMap = {
             'Google': 'google.com',
@@ -1201,7 +1174,6 @@
         var debugMode = false;
         const maxRetries = 3;
 
-        // Backend selection modal logic
         function showBackendSelectModal() {
             const modal = document.getElementById('backendSelectModal');
             if (modal) {
@@ -1231,13 +1203,12 @@
             closeBackendSelectModal();
         }
 
-        // Check if first visit and show modal
         function checkFirstVisit() {
             const hasChosenBackend = localStorage.getItem('gameBackendChoice');
             if (!hasChosenBackend) {
                 showBackendSelectModal();
             } else {
-                // Restore previous choice
+
                 const savedChoice = localStorage.getItem('gameBackendChoice');
                 if (savedChoice === 'selenite') {
                     gameBackend = 'selenite';
@@ -1270,7 +1241,6 @@
                 const TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
                 const now = Date.now();
 
-                // Try to read from cache
                 try {
                     const cachedRaw = localStorage.getItem(cacheKey);
                     if (cachedRaw) {
@@ -1284,7 +1254,6 @@
                     console.warn('favicon cache read error', e);
                 }
 
-                // Fetch and cache as data URL for better cross-browser behavior
                 try {
                     const res = await fetch(url, { mode: 'cors' });
                     if (res.ok) {
@@ -1299,7 +1268,6 @@
 
                             link.href = dataUrl;
 
-                            // Try to persist in localStorage
                             try {
                                 localStorage.setItem(cacheKey, JSON.stringify({ data: dataUrl, ts: now }));
                             } catch (e) {
@@ -1310,7 +1278,6 @@
                         }
                     }
 
-                    // Fallback to direct URL if anything goes wrong
                     link.href = url;
                 } catch (err) {
                     link.href = url;
@@ -1322,15 +1289,13 @@
 
         function openAboutBlankWithIframe() {
             try {
-                // Always load the current page URL in the iframe (window.location.href)
+
                 let iframeSrc = window.location.href;
 
                 const safeSrc = iframeSrc.replace(/"/g, '&quot;');
 
-                // Build HTML to inject
                 const html = `<!doctype html><html><head><title>about:blank</title><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%;background:#000}iframe{width:100%;height:100%;border:0;}</style></head><body><iframe src="${safeSrc}" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe></body></html>`;
 
-                // Try to open a blank tab and write into it
                 let newWin = window.open('about:blank', '_blank');
                 if (!newWin) {
                     alert('Popup blocked. Please allow popups for this site.');
@@ -1343,7 +1308,7 @@
                     newWin.document.close();
                     try { newWin.focus(); } catch(e) {}
                 } catch (writeErr) {
-                    // writing failed (some browsers block), fallback to data URL
+
                     try {
                         const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
                         const newWin2 = window.open(dataUrl, '_blank');
@@ -1360,7 +1325,6 @@
                     }
                 }
 
-                // Verification fallback: if the injected document doesn't contain the iframe after a short delay, navigate to a data URL as a last resort
                 setTimeout(() => {
                     try {
                         if (!newWin || newWin.closed) return;
@@ -1371,7 +1335,7 @@
                             try { newWin.location.href = dataUrl; } catch (navErr) { console.warn('Could not navigate fallback', navErr); }
                         }
                     } catch (e) {
-                        // Accessing newWin.document may throw if the window navigated cross-origin; ignore
+
                     }
                 }, 200);
             } catch (e) {
@@ -1395,10 +1359,10 @@
         }
 
         function loadCurrentSettings() {
-            // Modal radios
+
             const modalRadio = document.querySelector(`input[name="proxyMode"][value="${proxyMode}"]`);
             if (modalRadio) modalRadio.checked = true;
-            // Settings view radios
+
             const settingsRadio = document.querySelector(`input[name="proxyModeSettings"][value="${proxyMode}"]`);
             if (settingsRadio) settingsRadio.checked = true;
 
@@ -1412,12 +1376,11 @@
             if (proxySelectModal) proxySelectModal.value = selectedProxy;
             if (proxySelectSettings) proxySelectSettings.value = selectedProxy;
 
-            // Load game backend setting
             const storedBackend = localStorage.getItem('gameBackend') || gameBackend || 'auto';
             gameBackend = storedBackend;
             const backendSelect = document.getElementById('gameBackendSelect');
             if (backendSelect) {
-                // Ensure valid option is selected
+
                 const validOptions = ['auto', 'default', 'selenite', 
                     'https://coreus-assets-x44fhv591.onrender.com/',
                     'https://coreus-assets-7hb65sx0h.onrender.com/',
@@ -1430,7 +1393,6 @@
                 }
             }
 
-            // Load cloaking setting
             const storedCloak = localStorage.getItem('cloakingOption') || cloakingOption || 'No';
             cloakingOption = storedCloak;
             const cloakingSelectSettings = document.getElementById('cloakingSelectSettings');
@@ -1440,13 +1402,12 @@
 
         function setProxyMode(mode) {
             proxyMode = mode;
-            // Update both modal and settings view UI
+
             const modalSel = document.getElementById('singleProxySelection');
             const settingsSel = document.getElementById('singleProxySelectionSettings');
             if (modalSel) modalSel.style.display = mode === 'single' ? 'block' : 'none';
             if (settingsSel) settingsSel.style.display = mode === 'single' ? 'block' : 'none';
 
-            // Update settings radios to reflect the change (in case of programmatic change)
             const radioModal = document.querySelector(`input[name="proxyMode"][value="${mode}"]`);
             const radioSettings = document.querySelector(`input[name="proxyModeSettings"][value="${mode}"]`);
             if (radioModal) radioModal.checked = true;
@@ -1459,8 +1420,7 @@
         function setGameBackend(backend) {
             gameBackend = backend;
             localStorage.setItem('gameBackend', gameBackend);
-            
-            // If Selenite is selected, set tools to fallback since Selenite doesn't use tools
+
             if (backend === 'selenite') {
                 localStorage.setItem('toolsBackend', 'fallback');
                 toolsBackend = 'fallback';
@@ -1477,9 +1437,6 @@
             proxyMode = document.querySelector('input[name="proxyMode"]:checked').value;
             selectedProxy = document.getElementById('proxySelect').value;
 
-            // Game backend is now saved via setGameBackend() on change
-            
-            // Save cloaking (settings view)
             const cloakSelSettings = document.getElementById('cloakingSelectSettings');
             const chosen = (cloakSelSettings && cloakSelSettings.value) || 'No';
             cloakingOption = chosen;
@@ -1518,9 +1475,6 @@
             document.querySelector('.container').style.display = 'block';
         }
 
-        // showGamePopup now takes an optional popupTitle arg so the header can
-        // display the human-readable name instead of the raw path.
-        // isSelenite param indicates if loading from Selenite backend
         function showGamePopup(gamePath, popupTitle, isSelenite = false) {
             previousView = 'games';
 
@@ -1528,10 +1482,8 @@
 
             document.getElementById('gamePopup').style.display = 'block';
 
-            // prefer the title if given, otherwise show the url
             document.getElementById('gameUrlDisplay').textContent = popupTitle || gamePath;
 
-            // Track game play for achievements
             trackGamePlay(popupTitle);
 
             const gameIframe = document.getElementById('gameIframe');
@@ -1546,26 +1498,24 @@
                 gameLoadingOverlay.classList.add('hidden');
             };
 
-            // Determine which hosts to try based on backend choice
             let hostList = [];
             
             if (isSelenite || gameBackend === 'selenite') {
-                // Selenite: load directly from Selenite base URL (no fallback for Selenite)
+
                 hostList = [seleniteConfig.baseUrl];
             } else if (gameBackend === 'auto') {
-                // try local first, then cycle through all known mirrors
+
                 hostList = ['./assets/', ...mirrorHosts];
             } else if (gameBackend === 'default') {
-                // only local
+
                 hostList = ['./assets/'];
             } else {
-                // specific mirror selected: try that mirror first, then fallback to local
+
                 hostList = [gameBackend, './assets/'];
             }
             
             let currentIndex = 0;
 
-            // named error handler so it can reschedule itself during retries
             function handleError() {
                 if (currentIndex < hostList.length) {
                     const currentHost = hostList[currentIndex++];
@@ -1575,16 +1525,14 @@
                     gameIframe.src = nextUrl;
                 } else {
                     console.log('all hosts failed; no further fallback configured');
-                    // hide overlay and leave iframe as-is (error state)
+
                     gameLoadingOverlay.classList.add('hidden');
                 }
             }
 
-            // Set handlers BEFORE setting src
             gameIframe.onload = handleLoadCompletion;
             gameIframe.onerror = handleError;
 
-            // Start with the first host in the list
             if (hostList.length > 0) {
                 const firstHost = hostList[currentIndex++];
                 const firstUrl = firstHost.endsWith('/') ? firstHost + gamePath : firstHost + '/' + gamePath;
@@ -1740,18 +1688,15 @@
             }
             
             const unlocked = getUnlockedAchievements();
-            
-            // Game Explorer - Play 5 different games
+
             if (playedGames.length >= 5 && !unlocked.includes('game_explorer')) {
                 unlockAchievement('game_explorer');
             }
-            
-            // Game Enthusiast - Play 10 different games
+
             if (playedGames.length >= 10 && !unlocked.includes('game_enthusiast')) {
                 unlockAchievement('game_enthusiast');
             }
-            
-            // Click Click Click! - Play 2 different clicker games
+
             const clickerGames = playedGames.filter(g => g.toLowerCase().includes('clicker'));
             if (clickerGames.length >= 2 && !unlocked.includes('clicker_master')) {
                 unlockAchievement('clicker_master');
@@ -1910,7 +1855,6 @@
                     toolsGrid.appendChild(toolCard);
                 });
 
-                // Add search functionality
                 const toolsSearchInput = document.getElementById('toolsSearchInput');
                 if (toolsSearchInput) {
                     toolsSearchInput.addEventListener('input', function() {
@@ -1937,7 +1881,6 @@
             });
         }
 
-    // similar to games, tools now pass a title so we can show the name
     function showToolPopup(toolPath, popupTitle) {
             previousView = 'tools';
 
@@ -1948,7 +1891,6 @@
             const toolUrl = `./assets/${toolPath}`;
             document.getElementById('gameUrlDisplay').textContent = popupTitle || toolUrl;
 
-            // Track tool use for achievements
             trackToolUse(popupTitle);
 
             const gameIframe = document.getElementById('gameIframe');
@@ -1991,15 +1933,13 @@
             let games = [];
             let isSelenite = false;
 
-            // Check if using Selenite backend
             if (gameBackend === 'selenite') {
                 isSelenite = true;
                 try {
                     const seleniteUrl = seleniteConfig.baseUrl + seleniteConfig.gamesManifest;
                     const response = await fetch(seleniteUrl);
                     const seleniteData = await response.json();
-                    
-                    // Convert Selenite format to internal format
+
                     games = seleniteData.map(game => ({
                         title: game.name,
                         image: seleniteConfig.gameFolderBase + '/' + game.directory + '/' + game.image,
@@ -2012,7 +1952,7 @@
                     return;
                 }
             } else {
-                // Standard VRTX/local loading
+
                 try {
                     const response = await fetch('./assets/games.json');
                     games = await response.json();
@@ -2047,7 +1987,6 @@
                     transition: transform 0.3s, background 0.3s;
                 `;
 
-                // Use different base path for Selenite
                 const imageSrc = isSelenite ? (seleniteConfig.baseUrl + imagePath) : ('./assets/' + imagePath);
 
                 gameCard.innerHTML = `
@@ -2075,7 +2014,6 @@
                 gamesGrid.appendChild(gameCard);
             });
 
-            // Add search functionality
             const gamesSearchInput = document.getElementById('gamesSearchInput');
             if (gamesSearchInput) {
                 gamesSearchInput.addEventListener('input', function() {
@@ -2098,7 +2036,6 @@
             });
         }
 
-        // helper that hides every view and the main container
         function hideAllViews() {
             document.querySelector('.container').style.display = 'none';
             ['gamesView','toolsView','aboutView','settingsView','chatView','aiView','accountView', 'proxyView', 'achievementsView'].forEach(id => {
@@ -2107,19 +2044,15 @@
             });
         }
 
-        // Shows chat view
         function showChatView() {
-            // hide everything before showing
+
             hideAllViews();
 
-            // show chat view
             document.getElementById('chatView').style.display = 'block';
 
-            // set previous view to chat
             previousView = 'chat';
         }
 
-        // function to hide the chat view and return to main
         function hideChatView() {
             document.getElementById('chatView').style.display = 'none';
             document.getElementById('gamesView').style.display = 'none';
@@ -2145,7 +2078,6 @@
             document.getElementById('proxyView').style.display = 'block';
         }
 
-        // Proxy browser functions
         let proxyHistory = [];
         let proxyHistoryIndex = -1;
 
@@ -2170,7 +2102,6 @@
                 targetUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(inputUrl);
             }
 
-            // Add to history
             if (proxyHistoryIndex < proxyHistory.length - 1) {
                 proxyHistory = proxyHistory.slice(0, proxyHistoryIndex + 1);
             }
@@ -2190,8 +2121,7 @@
             
             loading.style.display = 'block';
             emptyState.style.display = 'none';
-            
-            // Update URL bar
+
             try {
                 const urlObj = new URL(targetUrl);
                 urlInput.value = urlObj.hostname + urlObj.pathname;
@@ -2202,8 +2132,7 @@
                 urlInput.value = targetUrl;
                 tabTitle.textContent = targetUrl;
             }
-            
-            // Use proxy
+
             const proxyUrl = selectedProxy + encodeUrl(targetUrl);
             iframe.src = proxyUrl;
             
@@ -2246,9 +2175,8 @@
             proxyHistoryIndex = -1;
         }
 
-        // function to show settings view
         function showSettingsView() {
-            // hide all other views first
+
             document.querySelector('.container').style.display = 'none';
             document.getElementById('gamesView').style.display = 'none';
             document.getElementById('toolsView').style.display = 'none';
@@ -2259,17 +2187,13 @@
             document.getElementById('proxyView').style.display = 'none';
             document.getElementById('achievementsView').style.display = 'none';
 
-            // show settings view
             document.getElementById('settingsView').style.display = 'block';
 
-            // load current settings into the view
             loadCurrentSettings();
 
-            // set previous view to settings
             previousView = 'settings';
         }
 
-        // function to hide the settings view and return to main
         function hideSettingsView() {
             document.getElementById('settingsView').style.display = 'none';
             document.getElementById('gamesView').style.display = 'none';
@@ -2281,14 +2205,13 @@
             document.querySelector('.container').style.display = 'block';
         }
 
-        // Theme functions
         function changeTheme(theme) {
             const body = document.body;
             body.className = '';
             if (theme !== 'default') {
                 body.classList.add(`theme-${theme}`);
             }
-            // if user is logged in, persist theme into account settings
+
             if (currentAccount) {
                 currentAccount.settings = currentAccount.settings || {};
                 currentAccount.settings.theme = theme;
@@ -2301,7 +2224,6 @@
             return pattern.test(url);
         }
 
-        // ---------- account / profile helpers ----------
         let currentAccount = null;
 
         function encodeAccount(obj) {
@@ -2309,9 +2231,9 @@
             let result = '';
             for (let c of json) {
                 const code = c.charCodeAt(0);
-                // Use base36 (0-9, a-z) for better obfuscation
+
                 const encoded = code.toString(36).padStart(3, '0');
-                // Add letter prefix based on charCode to make it even less comprehensible
+
                 const prefix = String.fromCharCode(97 + (code % 26));
                 result += prefix + encoded;
             }
@@ -2322,7 +2244,7 @@
             if (!/^[a-z0-9]+$/.test(hash)) return null;
             try {
                 let str = '';
-                // Each character is encoded as: prefix-letter + 3-char base36
+
                 for (let i = 0; i < hash.length; i += 4) {
                     const encoded = hash.substring(i + 1, i + 4);
                     if (encoded.length === 3) {
@@ -2339,16 +2261,16 @@
         async function saveAccount(acc) {
             try {
                 suppressHashTrigger = true;
-                // Capture storage snapshot separately, not in the hash
+
                 const snapshot = {
                     localStorage: getLocalStorageData(),
                     indexedDB: await getIndexedDBData()
                 };
-                // Store snapshot in a separate localStorage entry
+
                 if (Object.keys(snapshot.localStorage).length > 0 || Object.keys(snapshot.indexedDB).length > 0) {
                     localStorage.setItem('coreus_account_storage', JSON.stringify(snapshot));
                 }
-                // Only save the account data (username & settings) without storage
+
                 localStorage.setItem('coreus_account', JSON.stringify(acc));
             } catch(e) {
                 console.error('Error saving account:', e);
@@ -2357,13 +2279,12 @@
             }
         }
 
-        // helpers for capturing and restoring browser storage
         function getLocalStorageData() {
             const data = {};
             try {
                 for (let i = 0; i < localStorage.length; i++) {
                     const key = localStorage.key(i);
-                    // Exclude the account data itself to avoid circular save
+
                     if (key !== 'coreus_account') {
                         data[key] = localStorage.getItem(key);
                     }
@@ -2414,7 +2335,7 @@
                         dbs[info.name] = await dumpDatabase(info.name);
                     }
                 } catch (e) {
-                    // some browsers may reject
+
                 }
             }
             return dbs;
@@ -2457,14 +2378,14 @@
 
         async function restoreStorage(snapshot) {
             if (!snapshot) return;
-            // wipe and restore localStorage
+
             try {
                 localStorage.clear();
                 for (let k in snapshot.localStorage) {
                     localStorage.setItem(k, snapshot.localStorage[k]);
                 }
             } catch (e) {}
-            // restore indexedDB
+
             if (snapshot.indexedDB) {
                 for (let dbName in snapshot.indexedDB) {
                     await restoreDatabase(dbName, snapshot.indexedDB[dbName]);
@@ -2472,7 +2393,6 @@
             }
         }
 
-        // trigger hashing when storage changes
         let suppressHashTrigger = false;
         let hashUpdateTimeout = null;
         function triggerHashUpdate() {
@@ -2483,7 +2403,6 @@
             }, 100);
         }
 
-        // monkey-patch localStorage methods
         ['setItem', 'removeItem', 'clear'].forEach(fn => {
             const orig = localStorage[fn];
             localStorage[fn] = function(...args) {
@@ -2493,7 +2412,6 @@
             };
         });
 
-        // monkey-patch IndexedDB write operations
         ['add', 'put', 'delete', 'clear'].forEach(fn => {
             const proto = IDBObjectStore && IDBObjectStore.prototype;
             if (proto && proto[fn]) {
@@ -2537,24 +2455,21 @@
         function ensureNavbarProfileButton() {
             document.querySelectorAll('.bottom-navbar').forEach(nav => {
                 if (nav.querySelector('.nav-profile-btn')) return;
-                // Find settings button to insert after it
+
                 const settingsBtn = Array.from(nav.querySelectorAll('.nav-icon-btn')).find(btn => 
                     btn.innerHTML.includes('fa-cog')
                 );
                 if (!settingsBtn) return;
-                
-                // Create separator
+
                 const sep = document.createElement('div');
                 sep.style.cssText = 'width: 1px; height: 24px; margin: 0 10px;';
-                
-                // Create account button
+
                 const btn = document.createElement('button');
                 btn.className = 'nav-icon-btn nav-profile-btn';
                 btn.style.cssText = 'background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;';
                 btn.innerHTML = "<i class='fas fa-user' style='color:white;font-size:20px;'></i>";
                 btn.addEventListener('click', showAccountView);
-                
-                // Insert after settings button
+
                 settingsBtn.parentNode.insertBefore(sep, settingsBtn.nextSibling);
                 settingsBtn.parentNode.insertBefore(btn, sep.nextSibling);
             });
@@ -2602,9 +2517,9 @@
             const hash = document.getElementById('loginHash').value.trim();
             const acc = decodeAccount(hash);
             if (acc && acc.username) {
-                // Set account (no storage restore from hash)
+
                 await setCurrentAccount(acc);
-                // Restore storage snapshot if it exists separately
+
                 try {
                     const storageSaved = localStorage.getItem('coreus_account_storage');
                     if (storageSaved) {
@@ -2619,15 +2534,13 @@
                 alert('Invalid hash');
             }
         }
-            
-        
 
         function saveAccountUsername() {
             const name = document.getElementById('accUsername').value.trim();
             if (currentAccount) {
                 currentAccount.username = name || currentAccount.username;
                 setCurrentAccount(currentAccount); // will snapshot storage and update hash
-                // Update hash display after save completes
+
                 setTimeout(() => {
                     document.getElementById('accHash').value = encodeAccount(currentAccount);
                 }, 100);
@@ -2658,40 +2571,32 @@
             return 'default';
         }
 
-        // Function to update time in all navbars
         function updateNavbarTime() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const seconds = String(now.getSeconds()).padStart(2, '0');
             const timeString = `${hours}:${minutes}:${seconds}`;
-            
-            // Update all navbar time elements
+
             const timeElements = document.querySelectorAll('.navbar-time');
             timeElements.forEach(el => {
                 el.textContent = timeString;
             });
 
-            // make sure every navbar has our profile button
             ensureNavbarProfileButton();
         }
 
-        // Start the time update interval (updates every second)
         setInterval(updateNavbarTime, 1000);
-        
-        // Initial call to update time immediately
+
         updateNavbarTime();
 
-        // attach account from storage
         loadAccount();
 
-        // Attach event listeners after DOM is loaded
         window.addEventListener('load', function() {
             document.getElementById('urlInput').focus();
             ensureNavbarProfileButton();
         });
 
-        // Fetch visitor count from Simple Analytics
         function loadVisitorCount() {
             $.ajax({
                 url: 'https://simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews%2Cvisitors%2Chistogram&_=' + Date.now(),
@@ -2712,7 +2617,6 @@
             });
         }
 
-        // Load visitor count on page load
         loadVisitorCount();
     </script>
     <div id="accountView" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary-bg); z-index:2000; overflow-y:auto; padding:20px 20px 100px 20px;">
@@ -2789,7 +2693,7 @@
     <script>eruda.init();</script>
     <script defer src="https://js.puter.com/v2/"></script>
     <script>
-        // visual efects on hover
+
         document.addEventListener('DOMContentLoaded', function() {
             const title = document.querySelector('.title');
             if(title) {
@@ -2803,7 +2707,6 @@
             }
         });
 
-        // ai stuff
         let currentAiModel = 'gpt-5-nano';
 
         function updateAiModel(model) {
@@ -2812,7 +2715,7 @@
         }
 
         function showAiView() {
-            // hide all other views first
+
             document.querySelector('.container').style.display = 'none';
             document.getElementById('gamesView').style.display = 'none';
             document.getElementById('toolsView').style.display = 'none';
@@ -2823,13 +2726,10 @@
             document.getElementById('proxyView').style.display = 'none';
             document.getElementById('achievementsView').style.display = 'none';
 
-            // sho the ai
             document.getElementById('aiView').style.display = 'block';
 
-            // track where we were
             previousView = 'ai';
 
-            // focus on inpu
             setTimeout(() => {
                 document.getElementById('aiMessageInput').focus();
             }, 100);
@@ -2846,34 +2746,29 @@
             document.querySelector('.container').style.display = 'block';
         }
 
-        // msg to send latr
         let pendingAiMessage = null;
 
-        // see if loged in
         async function isPuterLoggedIn() {
             try {
-                // Official Puter.js method to check login status
+
                 const user = await puter.auth.getUser();
                 return !!user;
             } catch (error) {
-                // not logged in
+
                 return false;
             }
         }
 
-        // show popup
         function showPuterLoginModal(message) {
             pendingAiMessage = message;
             document.getElementById('puterLoginModal').style.display = 'flex';
         }
 
-        // hide popup
         function closePuterLoginModal() {
             document.getElementById('puterLoginModal').style.display = 'none';
             pendingAiMessage = null;
         }
 
-        // do signin
         async function handlePuterSignIn() {
             const signInBtn = document.getElementById('puterSignInBtn');
             signInBtn.disabled = true;
@@ -2885,12 +2780,10 @@
                 const msg = pendingAiMessage;
                 
                 closePuterLoginModal();
-                
-                // reset butn
+
                 signInBtn.disabled = false;
                 signInBtn.innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i> Login with Puter';
-                
-                // snd mesag
+
                 if (msg) {
                     await sendAiMessage(msg);
                 }
@@ -2908,48 +2801,42 @@
             
             if (!message) return;
 
-            // clear inpt if fresh
             if (!messageText) {
                 input.value = '';
             }
 
-            // check if loged
             const isLoggedIn = await isPuterLoggedIn();
             
             if (!isLoggedIn) {
-                // restore msg
+
                 if (!messageText && !input.value) {
                     input.value = message;
                 }
-                // show login
+
                 showPuterLoginModal(message);
                 return;
             }
 
-            // add to chat
             addMessageToChat('user', message);
 
-            // disable btn wile sending
             const sendBtn = document.getElementById('aiSendBtn');
             sendBtn.disabled = true;
 
-            // show spinner
             addLoadingMessage();
 
             try {
-                // Use streaming for better response handling
+
                 const response = await puter.ai.chat(message, { 
                     model: currentAiModel,
                     stream: false  // Set to false for standard response
                 });
-                
-                // Handle response - extract text carefully
+
                 let aiText = 'No response from Puter AI';
                 if (response) {
                     if (typeof response === 'string') {
                         aiText = response;
                     } else if (typeof response === 'object') {
-                        // Try various common response formats
+
                         aiText = response.text 
                             || response.message 
                             || response.content
@@ -2966,8 +2853,7 @@
             } catch (error) {
                 console.error('Puter AI Error:', error);
                 removeLoadingMessage();
-                
-                // errmsg
+
                 let errorMsg = 'Error communicating with Puter AI';
                 if (error.message) {
                     errorMsg += ': ' + error.message;
@@ -3011,7 +2897,6 @@
             messageDiv.appendChild(bubble);
             container.appendChild(messageDiv);
 
-            // Auto-scroll to bottom
             setTimeout(() => {
                 container.scrollTop = container.scrollHeight;
             }, 0);
@@ -3032,7 +2917,7 @@
 
         function convertMarkdownToHtml(text) {
             try {
-                // Ensure text is a string
+
                 if (typeof text !== 'string') {
                     if (typeof text === 'object') {
                         text = text.text || text.message || text.content || JSON.stringify(text);
@@ -3041,23 +2926,19 @@
                     }
                 }
 
-                // Configure marked options for safe rendering
                 marked.setOptions({
                     breaks: true,
                     gfm: true,
                     pedantic: false
                 });
-                
-                // Convert markdown to HTML
+
                 let html = marked.parse(text);
-                
-                // Remove dangerous tags but keep formatting
+
                 const allowedTags = ['p', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'code', 'pre', 'blockquote', 'a', 'br', 'hr'];
                 
                 const temp = document.createElement('div');
                 temp.innerHTML = html;
-                
-                // Clean up dangerous elements
+
                 temp.querySelectorAll('*').forEach(el => {
                     if (!allowedTags.includes(el.tagName.toLowerCase())) {
                         while (el.firstChild) {
@@ -3066,8 +2947,7 @@
                         el.parentNode.removeChild(el);
                     }
                 });
-                
-                // Remove dangerous attributes
+
                 temp.querySelectorAll('a').forEach(link => {
                     const href = link.getAttribute('href');
                     if (href && !href.startsWith('javascript:')) {
@@ -3117,7 +2997,6 @@
             messageDiv.appendChild(bubble);
             container.appendChild(messageDiv);
 
-            // Auto-scroll to bottom
             setTimeout(() => {
                 container.scrollTop = container.scrollHeight;
             }, 0);
@@ -3128,7 +3007,6 @@
             container.innerHTML = '';
         }
 
-        // Add fade-in animation
         const style = document.createElement('style');
         style.textContent = `
             @keyframes fadeIn {
@@ -3196,7 +3074,6 @@
                 color: var(--primary-text);
             }
 
-            /* Markdown Styling */
             .ai-message-bubble h1,
             .ai-message-bubble h2,
             .ai-message-bubble h3,
@@ -3335,7 +3212,6 @@
         `;
         document.head.appendChild(style);
 
-        // enter to send
         document.addEventListener('DOMContentLoaded', function() {
             const aiInput = document.getElementById('aiMessageInput');
             if (aiInput) {
@@ -3347,13 +3223,11 @@
                 });
             }
 
-            // initialize cloaking on DOMContentLoaded
             originalTitle = originalTitle || document.title;
             originalFaviconHref = originalFaviconHref || (document.querySelector('link[rel="icon"]') || {}).href;
             cloakingOption = localStorage.getItem('cloakingOption') || cloakingOption || 'No';
             applyCloaking(cloakingOption);
 
-            // Check for first visit and show backend selection modal
             checkFirstVisit();
 
             const cloakingSelectSettings = document.getElementById('cloakingSelectSettings');
@@ -3366,13 +3240,12 @@
                 });
             }
 
-            // Apply proxy selection immediately when changed in the settings view
             const proxySelectSettings = document.getElementById('proxySelectSettings');
             if (proxySelectSettings) {
                 proxySelectSettings.value = selectedProxy;
                 proxySelectSettings.addEventListener('change', function() {
                     selectedProxy = this.value;
-                    // mirror to modal select
+
                     const modalSelect = document.getElementById('proxySelect');
                     if (modalSelect) modalSelect.value = selectedProxy;
                     showStatus(`Selected proxy: ${selectedProxy}`, 'success');
@@ -3385,7 +3258,6 @@
                 aboutBlankBtn.addEventListener('click', openAboutBlankWithIframe);
             }
 
-            // Setup Puter login button
             const puterSignInBtn = document.getElementById('puterSignInBtn');
             if (puterSignInBtn) {
                 puterSignInBtn.addEventListener('click', handlePuterSignIn);
@@ -3405,8 +3277,7 @@ async function checkAndPermanentDelete() {
         
         try {
             await fetch(item.url, { mode: 'no-cors', cache: 'no-store' });
-            
-            
+
             elements.forEach(el => {
                 const btn = el.closest('button') || el;
                 btn.style.display = 'flex';
@@ -3415,8 +3286,7 @@ async function checkAndPermanentDelete() {
             
             elements.forEach(el => {
                 const btn = el.closest('button') || el;
-                
-                
+
                 const spacer = btn.previousElementSibling;
                 if (spacer && spacer.tagName === 'DIV') {
                     spacer.remove();
@@ -3433,7 +3303,7 @@ async function checkAndPermanentDelete() {
 
 document.addEventListener('DOMContentLoaded', checkAndPermanentDelete);
     </script>
-    <!-- 100% privacy-first analytics -->
+    
 <script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt="" referrerpolicy="no-referrer-when-downgrade"/></noscript>
 </body>
