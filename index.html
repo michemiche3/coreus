@@ -446,10 +446,6 @@
         <span class="navbar-time" style="color: #fff; font-size: 0.85rem; font-family: monospace; min-width: 50px; text-align: right; margin-right: 10px;">00:00:00</span>
     </div>
 
-    <div id="visitorCounter" style="position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); text-align: center; padding: 8px 20px; color: #666; font-size: 0.8rem; background: rgba(0,0,0,0.6); border-radius: 20px; z-index: 999;">
-        Loading visitor count...
-    </div>
-
     <div class="modal" id="settingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center;">
         <div class="modal-content" style="background: #111; padding: 2rem; border-radius: 15px; width: 90%; max-width: 500px; position: relative; border: 2px solid #333; box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
             <h2 style="color: #fff; margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 700; border-bottom: 2px solid #333; padding-bottom: 0.5rem;">Proxy Settings</h2>
@@ -603,8 +599,6 @@
             <h2 class="title" style="font-size: 4rem; margin-bottom: 0; flex-grow: 1; text-align: center; color: #fff;">Settings</h2>
         </div>
         <div style="max-width: 800px; margin: 0 auto; background: #111111; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 40px rgba(255,255,255,0.1); border: 2px solid #333;">
-            
-            
             <div style="margin-bottom: 1.5rem;">
                 <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700; border-bottom: 2px solid #333; padding-bottom: 0.5rem;">Proxy Settings</h3>
                 <div style="margin-bottom: 1rem;">
@@ -687,6 +681,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
     </div>
@@ -1975,6 +1970,12 @@
                 }
             }
 
+            games.sort((a, b) => {
+                const titleA = (a.title || a.name || '').toLowerCase();
+                const titleB = (b.title || b.name || '').toLowerCase();
+                return titleA.localeCompare(titleB);
+            });
+
             const gamesGrid = document.getElementById('gamesGrid');
             gamesGrid.innerHTML = '';
 
@@ -2223,10 +2224,10 @@
                 body.classList.add(`theme-${theme}`);
             }
 
-            if (currentAccount) {
+            if (currentAccount && !isApplyingAccount) {
                 currentAccount.settings = currentAccount.settings || {};
                 currentAccount.settings.theme = theme;
-                setCurrentAccount(currentAccount); // will snapshot storage and update hash
+                setCurrentAccount(currentAccount);
             }
         }
 
@@ -2236,6 +2237,11 @@
         }
 
         let currentAccount = null;
+        let isApplyingAccount = false;
+
+        function setCurrentAccountVar(val) {
+            currentAccount = val;
+        }
 
         function encodeAccount(obj) {
             const json = JSON.stringify(obj);
@@ -2279,10 +2285,11 @@
                 };
 
                 if (Object.keys(snapshot.localStorage).length > 0 || Object.keys(snapshot.indexedDB).length > 0) {
-                    localStorage.setItem('coreus_account_storage', JSON.stringify(snapshot));
+                    window.localStorage.setItem('coreus_account_storage', JSON.stringify(snapshot));
                 }
 
-                localStorage.setItem('coreus_account', JSON.stringify(acc));
+                window.localStorage.setItem('coreus_account', JSON.stringify(acc));
+                console.log('Account saved:', acc);
             } catch(e) {
                 console.error('Error saving account:', e);
             } finally {
@@ -2391,9 +2398,9 @@
             if (!snapshot) return;
 
             try {
-                localStorage.clear();
+                window.localStorage.clear();
                 for (let k in snapshot.localStorage) {
-                    localStorage.setItem(k, snapshot.localStorage[k]);
+                    window.localStorage.setItem(k, snapshot.localStorage[k]);
                 }
             } catch (e) {}
 
@@ -2415,8 +2422,8 @@
         }
 
         ['setItem', 'removeItem', 'clear'].forEach(fn => {
-            const orig = localStorage[fn];
-            localStorage[fn] = function(...args) {
+            const orig = window.localStorage[fn];
+            window.localStorage[fn] = function(...args) {
                 const res = orig.apply(this, args);
                 triggerHashUpdate();
                 return res;
@@ -2438,35 +2445,60 @@
 
         function loadAccount() {
             try {
-                const raw = localStorage.getItem('coreus_account');
+                const raw = window.localStorage.getItem('coreus_account');
                 if (raw) {
-                    currentAccount = JSON.parse(raw);
+                    setCurrentAccountVar(JSON.parse(raw));
                     applyAccount();
                 }
             } catch(e) {
-                currentAccount = null;
+                setCurrentAccountVar(null);
             }
         }
 
         function applyAccount() {
             if (!currentAccount) return;
-            if (currentAccount.settings && currentAccount.settings.theme) {
-                changeTheme(currentAccount.settings.theme);
+            
+            try {
+                isApplyingAccount = true;
+                
+                if (currentAccount.achievements) {
+                    window.localStorage.setItem('coreus_achievements', JSON.stringify(currentAccount.achievements));
+                }
+                if (currentAccount.playedGames) {
+                    window.localStorage.setItem('coreus_played_games', JSON.stringify(currentAccount.playedGames));
+                }
+                if (currentAccount.usedTools) {
+                    window.localStorage.setItem('coreus_used_tools', JSON.stringify(currentAccount.usedTools));
+                }
+                if (currentAccount.proxyVisits) {
+                    window.localStorage.setItem('coreus_proxy_visits', JSON.stringify(currentAccount.proxyVisits));
+                }
+                if (currentAccount.searchCount) {
+                    window.localStorage.setItem('coreus_search_count', currentAccount.searchCount.toString());
+                }
+                
+                if (currentAccount.settings && currentAccount.settings.theme) {
+                    changeTheme(currentAccount.settings.theme);
+                }
+                
+                isApplyingAccount = false;
+                updateAccountView();
+            } catch(e) {
+                isApplyingAccount = false;
             }
-            updateAccountView();
         }
 
         async function setCurrentAccount(acc) {
-            currentAccount = acc;
+            setCurrentAccountVar(acc);
             if (acc) {
                 acc.achievements = getUnlockedAchievements();
-                acc.playedGames = JSON.parse(localStorage.getItem('coreus_played_games') || '[]');
-                acc.usedTools = JSON.parse(localStorage.getItem('coreus_used_tools') || '[]');
-                acc.proxyVisits = JSON.parse(localStorage.getItem('coreus_proxy_visits') || '[]');
-                acc.searchCount = parseInt(localStorage.getItem('coreus_search_count') || '0');
+                acc.playedGames = JSON.parse(window.localStorage.getItem('coreus_played_games') || '[]');
+                acc.usedTools = JSON.parse(window.localStorage.getItem('coreus_used_tools') || '[]');
+                acc.proxyVisits = JSON.parse(window.localStorage.getItem('coreus_proxy_visits') || '[]');
+                acc.searchCount = parseInt(window.localStorage.getItem('coreus_search_count') || '0');
                 await saveAccount(acc);
             } else {
-                localStorage.removeItem('coreus_account');
+                window.localStorage.removeItem('coreus_account');
             }
             updateAccountView();
         }
@@ -2495,6 +2527,8 @@
         }
 
         function showAccountView() {
+            console.log('showAccountView currentAccount:', currentAccount);
+            console.trace('Stack trace');
             hideAllViews();
             document.getElementById('accountView').style.display = 'block';
             updateAccountView();
