@@ -1603,6 +1603,67 @@
             localStorage.setItem('coreus_achievements', JSON.stringify(unlocked));
         }
 
+        function getGameFavorites() {
+            const backend = gameBackend || 'vrtx';
+            const key = 'coreus_game_favorites_' + backend;
+            const saved = localStorage.getItem(key);
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveGameFavorites(favorites) {
+            const backend = gameBackend || 'vrtx';
+            const key = 'coreus_game_favorites_' + backend;
+            localStorage.setItem(key, JSON.stringify(favorites));
+            if (currentAccount) {
+                currentAccount.gameFavorites = getAllGameFavorites();
+                setCurrentAccount(currentAccount);
+            }
+        }
+
+        function getAllGameFavorites() {
+            return {
+                vrtx: JSON.parse(localStorage.getItem('coreus_game_favorites_vrtx') || '[]'),
+                selenite: JSON.parse(localStorage.getItem('coreus_game_favorites_selenite') || '[]')
+            };
+        }
+
+        function toggleGameFavorite(gameTitle) {
+            const favorites = getGameFavorites();
+            const index = favorites.indexOf(gameTitle);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(gameTitle);
+            }
+            saveGameFavorites(favorites);
+            loadGames();
+        }
+
+        function getToolFavorites() {
+            const saved = localStorage.getItem('coreus_tool_favorites');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveToolFavorites(favorites) {
+            localStorage.setItem('coreus_tool_favorites', JSON.stringify(favorites));
+            if (currentAccount) {
+                currentAccount.toolFavorites = favorites;
+                setCurrentAccount(currentAccount);
+            }
+        }
+
+        function toggleToolFavorite(toolTitle) {
+            const favorites = getToolFavorites();
+            const index = favorites.indexOf(toolTitle);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(toolTitle);
+            }
+            saveToolFavorites(favorites);
+            loadTools();
+        }
+
         function unlockAchievement(achievementId) {
             const unlocked = getUnlockedAchievements();
             if (!unlocked.includes(achievementId)) {
@@ -1816,10 +1877,29 @@
                 const toolsGrid = document.getElementById('toolsGrid');
                 toolsGrid.innerHTML = '';
 
+                const favorites = getToolFavorites();
+                tools.sort((a, b) => {
+                    const titleA = a.title || a.name || '';
+                    const titleB = b.title || b.name || '';
+                    const aFav = favorites.includes(titleA);
+                    const bFav = favorites.includes(titleB);
+                    if (aFav && !bFav) return -1;
+                    if (!aFav && bFav) return 1;
+                    return titleA.toLowerCase().localeCompare(titleB.toLowerCase());
+                });
+
+                if (favorites.length > 0) {
+                    const favHeader = document.createElement('div');
+                    favHeader.style.cssText = 'grid-column: 1 / -1; color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; padding: 10px 0; border-bottom: 2px solid #333;';
+                    favHeader.textContent = '★ Favorites';
+                    toolsGrid.appendChild(favHeader);
+                }
+
                 tools.forEach(tool => {
                     const title = tool.title || tool.name || 'Unknown Tool';
                     const imagePath = tool.image || tool.img || '';
                     const toolPath = tool.toolPath || tool.href || tool.path || tool.url || '';
+                    const isFavorite = favorites.includes(title);
 
                     const toolCard = document.createElement('div');
                     toolCard.className = 'tool-card';
@@ -1837,12 +1917,23 @@
                     `;
 
                     toolCard.innerHTML = `
-                        <img src="https://noodlelover1.github.io/coreus-assets/${imagePath}"
-                             alt="${title}"
-                             style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
+                        <div style="position: relative; width: 150px; height: 150px;">
+                            <img src="https://noodlelover1.github.io/coreus-assets/${imagePath}"
+                                 alt="${title}"
+                                 style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; border: 1px solid var(--border-color);"
+                                 onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
+                            <button class="tool-favorite-btn" data-title="${title}" style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: ${isFavorite ? '#FFD700' : '#666'}; transition: transform 0.2s;">
+                                ${isFavorite ? '★' : '☆'}
+                            </button>
+                        </div>
                         <span style="color: var(--primary-text); font-size: 1.2rem; margin-top: 10px;">${title}</span>
                     `;
+
+                    const favBtn = toolCard.querySelector('.tool-favorite-btn');
+                    favBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleToolFavorite(title);
+                    });
 
                     toolCard.addEventListener('click', () => {
                         if (toolPath) {
@@ -1970,14 +2061,26 @@
                 }
             }
 
+            const favorites = getGameFavorites();
             games.sort((a, b) => {
-                const titleA = (a.title || a.name || '').toLowerCase();
-                const titleB = (b.title || b.name || '').toLowerCase();
-                return titleA.localeCompare(titleB);
+                const titleA = a.title || a.name || '';
+                const titleB = b.title || b.name || '';
+                const aFav = favorites.includes(titleA);
+                const bFav = favorites.includes(titleB);
+                if (aFav && !bFav) return -1;
+                if (!aFav && bFav) return 1;
+                return titleA.toLowerCase().localeCompare(titleB.toLowerCase());
             });
 
             const gamesGrid = document.getElementById('gamesGrid');
             gamesGrid.innerHTML = '';
+
+            if (favorites.length > 0) {
+                const favHeader = document.createElement('div');
+                favHeader.style.cssText = 'grid-column: 1 / -1; color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; padding: 10px 0; border-bottom: 2px solid #333;';
+                favHeader.textContent = '★ Favorites';
+                gamesGrid.appendChild(favHeader);
+            }
 
             games.forEach(game => {
                 const title = game.title || game.name || 'Unknown Game';
@@ -2000,14 +2103,26 @@
                 `;
 
                 const imageSrc = isSelenite ? (seleniteConfig.baseUrl + imagePath) : ('https://noodlelover1.github.io/coreus-assets/' + imagePath);
+                const isFavorite = favorites.includes(title);
 
                 gameCard.innerHTML = `
-                    <img src="${imageSrc}"
-                         alt="${title}"
-                         style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);"
-                         onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
+                    <div style="position: relative; width: 150px; height: 150px;">
+                        <img src="${imageSrc}"
+                             alt="${title}"
+                             style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; border: 1px solid var(--border-color);"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
+                        <button class="favorite-btn" data-title="${title}" style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: ${isFavorite ? '#FFD700' : '#666'}; transition: transform 0.2s;">
+                            ${isFavorite ? '★' : '☆'}
+                        </button>
+                    </div>
                     <span style="color: var(--primary-text); font-size: 1.2rem; margin-top: 10px;">${title}</span>
                 `;
+
+                const favBtn = gameCard.querySelector('.favorite-btn');
+                favBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleGameFavorite(title);
+                });
 
                 gameCard.addEventListener('click', () => {
                     if (gamePath) {
@@ -2476,6 +2591,13 @@
                 if (currentAccount.searchCount) {
                     window.localStorage.setItem('coreus_search_count', currentAccount.searchCount.toString());
                 }
+                if (currentAccount.gameFavorites) {
+                    window.localStorage.setItem('coreus_game_favorites_vrtx', JSON.stringify(currentAccount.gameFavorites.vrtx || []));
+                    window.localStorage.setItem('coreus_game_favorites_selenite', JSON.stringify(currentAccount.gameFavorites.selenite || []));
+                }
+                if (currentAccount.toolFavorites) {
+                    window.localStorage.setItem('coreus_tool_favorites', JSON.stringify(currentAccount.toolFavorites));
+                }
                 
                 if (currentAccount.settings && currentAccount.settings.theme) {
                     changeTheme(currentAccount.settings.theme);
@@ -2496,6 +2618,8 @@
                 acc.usedTools = JSON.parse(window.localStorage.getItem('coreus_used_tools') || '[]');
                 acc.proxyVisits = JSON.parse(window.localStorage.getItem('coreus_proxy_visits') || '[]');
                 acc.searchCount = parseInt(window.localStorage.getItem('coreus_search_count') || '0');
+                acc.gameFavorites = getAllGameFavorites();
+                acc.toolFavorites = getToolFavorites();
                 await saveAccount(acc);
             } else {
                 window.localStorage.removeItem('coreus_account');
@@ -2564,7 +2688,9 @@
                 playedGames: JSON.parse(localStorage.getItem('coreus_played_games') || '[]'),
                 usedTools: JSON.parse(localStorage.getItem('coreus_used_tools') || '[]'),
                 proxyVisits: JSON.parse(localStorage.getItem('coreus_proxy_visits') || '[]'),
-                searchCount: parseInt(localStorage.getItem('coreus_search_count') || '0')
+                searchCount: parseInt(localStorage.getItem('coreus_search_count') || '0'),
+                gameFavorites: getAllGameFavorites(),
+                toolFavorites: getToolFavorites()
             };
             await setCurrentAccount(acc);
             alert('Account created! Your hash is:\n' + encodeAccount(acc));
@@ -2578,6 +2704,16 @@
             const hash = document.getElementById('loginHash').value.trim();
             const acc = decodeAccount(hash);
             if (acc && acc.username) {
+
+                try {
+                    const storageSaved = localStorage.getItem('coreus_account_storage');
+                    if (storageSaved) {
+                        const snapshot = JSON.parse(storageSaved);
+                        await restoreStorage(snapshot);
+                    }
+                } catch (e) {
+                    console.log('No storage snapshot to restore');
+                }
 
                 await setCurrentAccount(acc);
 
@@ -2596,16 +2732,14 @@
                 if (acc.searchCount) {
                     localStorage.setItem('coreus_search_count', acc.searchCount.toString());
                 }
-
-                try {
-                    const storageSaved = localStorage.getItem('coreus_account_storage');
-                    if (storageSaved) {
-                        const snapshot = JSON.parse(storageSaved);
-                        await restoreStorage(snapshot);
-                    }
-                } catch (e) {
-                    console.log('No storage snapshot to restore');
+                if (acc.gameFavorites) {
+                    localStorage.setItem('coreus_game_favorites_vrtx', JSON.stringify(acc.gameFavorites.vrtx || []));
+                    localStorage.setItem('coreus_game_favorites_selenite', JSON.stringify(acc.gameFavorites.selenite || []));
                 }
+                if (acc.toolFavorites) {
+                    localStorage.setItem('coreus_tool_favorites', JSON.stringify(acc.toolFavorites));
+                }
+
                 alert('Logged in as ' + acc.username);
             } else {
                 alert('Invalid hash');
