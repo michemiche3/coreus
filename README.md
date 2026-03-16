@@ -19,7 +19,7 @@
 - https://github.com/l3br00n/lebron STOLE MY CODE AND VIOLATED THE AGPL 3.0 LICENSE TERMS. 
 ## Features
 
-- 🎮 950+ GAMES !!!
+- 🎮 500+ GAMES !!!
 - 🌐 Ultraviolet proxy
 - 💬 Live chatroom
 - 🏆 Achievements system
