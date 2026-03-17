@@ -50,9 +50,11 @@ I am actively looking for contributors ! Wanna help ? See the devs todo list at 
 
 There are a bunch of ways to access Coreus. Here are some :
 
-### Live Demo
+### Links
 
-You can simply use the live demo at https://noodlelover1.github.io/coreus/ . Blocked ? Use one of the options below :
+Here is a list of links (check regularly for updates):
+- https://noodlelover1.github.io/coreus
+- https://coreus-prod.onrender.com
 
 ### Codespaces
 
