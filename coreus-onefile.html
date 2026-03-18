@@ -537,18 +537,124 @@
         </div>
     </div>
 
-    <div id="gamePopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 3000;">
-        <div class="frame-header">
-            <span class="frame-url" id="gameUrlDisplay"></span>
-            <button class="close-btn" onclick="closeGamePopup()">✕ Close</button>
-        </div>
-        <iframe class="proxy-iframe" id="gameIframe" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <div class="loading-overlay" id="gameLoadingOverlay">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">Loading content...</div>
-            <div id="currentLoadUrl" style="margin-top: 10px; font-size: 0.85rem; color: var(--secondary-text); word-break: break-all; max-width: 400px;"></div>
+    <div id="gamePopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); background-image: radial-gradient(circle, #333 1px, transparent 1px); background-size: 40px 40px; z-index: 3000; overflow-y: auto;">
+        <div id="gameContainer" style="max-width: 1000px; margin: 20px auto; background: #111; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 2px solid #333;">
+            <div id="gameHeader" style="background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;">
+                <span id="gameUrlDisplay" style="color: #fff; font-size: 1.1rem; font-weight: 600;"></span>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div id="fpsCounter" style="background: rgba(0,0,0,0.5); padding: 6px 12px; border-radius: 20px; color: #4CAF50; font-size: 0.85rem; font-family: monospace; font-weight: 600;">0 FPS</div>
+                    <button id="fullscreenBtn" onclick="toggleGameFullscreen()" style="background: rgba(255,255,255,0.1); border: none; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: all 0.3s;"><i class="fas fa-expand"></i></button>
+                    <button onclick="closeGamePopup()" style="background: #ff4444; border: none; color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.3s;">✕</button>
+                </div>
+            </div>
+            <div id="gameIframeContainer" style="position: relative; background: #000;">
+                <iframe class="proxy-iframe" id="gameIframe" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox" style="width: 100%; height: 70vh; border: none;"></iframe>
+                <div class="loading-overlay" id="gameLoadingOverlay">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading content...</div>
+                    <div id="currentLoadUrl" style="margin-top: 10px; font-size: 0.85rem; color: var(--secondary-text); word-break: break-all; max-width: 400px;"></div>
+                </div>
+            </div>
+            <div style="padding: 20px;">
+                <h3 style="color: #fff; margin-bottom: 15px; font-size: 1.2rem;">More Games</h3>
+                <div id="randomGamesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px;"></div>
+            </div>
         </div>
     </div>
+
+    <script>
+        let fpsInterval = null;
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let currentFps = 0;
+
+        function startFpsCounter() {
+            if (fpsInterval) return;
+            frameCount = 0;
+            lastFrameTime = performance.now();
+            
+            fpsInterval = setInterval(() => {
+                const now = performance.now();
+                currentFps = Math.round(frameCount * 1000 / (now - lastFrameTime));
+                frameCount = 0;
+                lastFrameTime = now;
+                const fpsEl = document.getElementById('fpsCounter');
+                if (fpsEl) {
+                    fpsEl.textContent = currentFps + ' FPS';
+                    fpsEl.style.color = currentFps >= 55 ? '#4CAF50' : currentFps >= 30 ? '#FFC107' : '#ff4444';
+                }
+            }, 1000);
+        }
+
+        function stopFpsCounter() {
+            if (fpsInterval) {
+                clearInterval(fpsInterval);
+                fpsInterval = null;
+            }
+        }
+
+        function trackFrame() {
+            frameCount++;
+            requestAnimationFrame(trackFrame);
+        }
+
+        function toggleGameFullscreen() {
+            const container = document.getElementById('gameContainer');
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {});
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        async function loadRandomGames() {
+            const grid = document.getElementById('randomGamesGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            
+            const currentGame = document.getElementById('gameUrlDisplay').textContent;
+            
+            try {
+                let games = [];
+                if (gameBackend === 'selenite') {
+                    const response = await fetch(seleniteConfig.baseUrl + seleniteConfig.gamesManifest);
+                    const data = await response.json();
+                    games = data.map(g => ({ title: g.name, image: seleniteConfig.gameFolderBase + '/' + g.directory + '/' + g.image, path: seleniteConfig.gameFolderBase + '/' + g.directory + '/index.html' }));
+                } else {
+                    const response = await fetch('https://noodlelover1.github.io/coreus-assets/games.json');
+                    games = await response.json();
+                }
+                
+                const shuffled = games.sort(() => 0.5 - Math.random()).slice(0, 8);
+                
+                shuffled.forEach(game => {
+                    const title = game.title || game.name || 'Unknown';
+                    if (title === currentGame) return;
+                    const image = game.image || game.img || '';
+                    const path = game.gamePath || game.href || game.path || game.url || '';
+                    const imageSrc = (gameBackend === 'selenite' ? seleniteConfig.baseUrl : 'https://noodlelover1.github.io/coreus-assets/') + image;
+                    
+                    const card = document.createElement('div');
+                    card.style.cssText = 'background: #1a1a1a; border-radius: 12px; padding: 10px; cursor: pointer; transition: transform 0.3s; text-align: center;';
+                    card.innerHTML = `
+                        <img src="${imageSrc}" alt="${title}" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; margin-bottom: 8px; background: linear-gradient(135deg, #333, #222);" onerror="this.style.display='none'">
+                        <div style="color: #fff; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</div>
+                    `;
+                    card.onclick = () => showGamePopup(path, title, gameBackend === 'selenite');
+                    card.onmouseenter = () => card.style.transform = 'scale(1.05)';
+                    card.onmouseleave = () => card.style.transform = 'scale(1)';
+                    grid.appendChild(card);
+                });
+            } catch(e) {}
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            const btn = document.getElementById('fullscreenBtn');
+            if (btn) {
+                btn.innerHTML = document.fullscreenElement ? '<i class="fas fa-compress"></i>' : '<i class="fas fa-expand"></i>';
+            }
+        });
+    </script>
 
     <div id="chatView" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 800px; height: 65vh; max-height: 600px; background: #0a0a0a; background-image: radial-gradient(circle, #333 1px, transparent 1px); background-size: 40px 40px; color: #fff; z-index: 3000; overflow: hidden; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
         <style>
@@ -1490,6 +1596,10 @@ The website owner does not encourage or endorse bypassing network restrictions, 
 
             trackGamePlay(popupTitle);
 
+            startFpsCounter();
+            trackFrame();
+            loadRandomGames();
+
             const gameIframe = document.getElementById('gameIframe');
             const gameLoadingOverlay = document.getElementById('gameLoadingOverlay');
 
@@ -1549,20 +1659,21 @@ The website owner does not encourage or endorse bypassing network restrictions, 
         let previousView = 'main';
 
         function closeGamePopup() {
-    document.getElementById('gamePopup').style.display = 'none';
+            stopFpsCounter();
+            document.getElementById('gamePopup').style.display = 'none';
 
-        const gameLoadingOverlay = document.getElementById('gameLoadingOverlay');
-    gameLoadingOverlay.classList.add('hidden');
+            const gameLoadingOverlay = document.getElementById('gameLoadingOverlay');
+            gameLoadingOverlay.classList.add('hidden');
 
-        document.getElementById('gamesView').style.display = 'none';
-    document.getElementById('toolsView').style.display = 'none';
-    document.getElementById('aboutView').style.display = 'none';
-    document.getElementById('chatView').style.display = 'none';
-    document.getElementById('settingsView').style.display = 'none';
-    document.querySelector('.container').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.querySelector('.container').style.display = 'none';
 
-    if (previousView === 'games') {
-        document.getElementById('gamesView').style.display = 'block';
+            if (previousView === 'games') {
+                document.getElementById('gamesView').style.display = 'block';
     } else if (previousView === 'tools') {
         document.getElementById('toolsView').style.display = 'block';
     } else if (previousView === 'about') {
