@@ -54,7 +54,6 @@ There are a bunch of ways to access Coreus. Here are some :
 
 Here is a list of links (check regularly for updates):
 - https://noodlelover1.github.io/coreus
-- https://coreus-prod.onrender.com
 
 ### Codespaces
 
