@@ -958,6 +958,7 @@ The website owner does not encourage or endorse bypassing network restrictions, 
       document.getElementById("panicUrlInput").value = u;
     }
     checkFirstVisit();
+    trackFirstVisitAndVeteran();
   });
 
   document.addEventListener("keydown", (e) => {
@@ -1735,10 +1736,20 @@ The website owner does not encourage or endorse bypassing network restrictions, 
             { id: 'clicker_master', name: 'Click Click Click!', description: 'Play 2 different clicker games', icon: '💰', unlocked: false },
             { id: 'game_explorer', name: 'Game Explorer', description: 'Play 5 different games', icon: '🎮', unlocked: false },
             { id: 'game_enthusiast', name: 'Game Enthusiast', description: 'Play 10 different games', icon: '🌟', unlocked: false },
+            { id: 'master_gamer', name: 'Master Gamer', description: 'Play 50 different games', icon: '👑', unlocked: false },
+            { id: 'tool_user', name: 'Tool User', description: 'Use 3 different tools', icon: '🔧', unlocked: false },
+            { id: 'tool_master', name: 'Tool Master', description: 'Use 10 different tools', icon: '⚙️', unlocked: false },
             { id: 'proxy_surfer', name: 'Proxy Surfer', description: 'Visit 3 different websites using the proxy', icon: '🌐', unlocked: false },
+            { id: 'globetrotter', name: 'Globetrotter', description: 'Visit 20 different websites', icon: '🗺️', unlocked: false },
             { id: 'search_master', name: 'Search Master', description: 'Perform 5 searches', icon: '🔍', unlocked: false },
-            { id: 'chatty', name: 'Getting Social', description: 'Send your first message in chat', icon: '💬', unlocked: false },
-            { id: 'tool_user', name: 'Tool User', description: 'Use 3 different tools', icon: '🔧', unlocked: false }
+            { id: 'speed_demon', name: 'Speed Demon', description: 'Perform 20 searches', icon: '⚡', unlocked: false },
+            { id: 'chatty', name: 'Getting Social', description: 'Visit the chat tab', icon: '💬', unlocked: false },
+            { id: 'social_butterfly', name: 'Social Butterfly', description: 'Visit chat 10 times', icon: '🦋', unlocked: false },
+            { id: 'bookmarker', name: 'Bookmark Master', description: 'Favorite 10 games', icon: '📌', unlocked: false },
+            { id: 'night_owl', name: 'Night Owl', description: 'Use Coreus after midnight', icon: '🦉', unlocked: false },
+            { id: 'early_bird', name: 'Early Bird', description: 'Use Coreus before 7am', icon: '🐦', unlocked: false },
+            { id: 'collector', name: 'Collector', description: 'Favorite 5 games', icon: '📚', unlocked: false },
+            { id: 'veteran', name: 'Veteran', description: 'Use Coreus for 7 days', icon: '🎖️', unlocked: false }
         ];
 
         function getUnlockedAchievements() {
@@ -1779,8 +1790,10 @@ The website owner does not encourage or endorse bypassing network restrictions, 
             const index = favorites.indexOf(gameTitle);
             if (index > -1) {
                 favorites.splice(index, 1);
+                trackFavoriteRemove();
             } else {
                 favorites.push(gameTitle);
+                trackFavoriteGame();
             }
             saveGameFavorites(favorites);
             loadGames();
@@ -1881,7 +1894,13 @@ The website owner does not encourage or endorse bypassing network restrictions, 
                 localStorage.setItem('coreus_played_games', JSON.stringify(playedGames));
             }
             
+            const clickerGames = playedGames.filter(g => g.toLowerCase().includes('clicker'));
+            
             const unlocked = getUnlockedAchievements();
+
+            if (playedGames.length >= 2 && clickerGames.length >= 2 && !unlocked.includes('clicker_master')) {
+                unlockAchievement('clicker_master');
+            }
 
             if (playedGames.length >= 5 && !unlocked.includes('game_explorer')) {
                 unlockAchievement('game_explorer');
@@ -1891,9 +1910,8 @@ The website owner does not encourage or endorse bypassing network restrictions, 
                 unlockAchievement('game_enthusiast');
             }
 
-            const clickerGames = playedGames.filter(g => g.toLowerCase().includes('clicker'));
-            if (clickerGames.length >= 2 && !unlocked.includes('clicker_master')) {
-                unlockAchievement('clicker_master');
+            if (playedGames.length >= 50 && !unlocked.includes('master_gamer')) {
+                unlockAchievement('master_gamer');
             }
             
             if (currentAccount) {
@@ -1919,6 +1937,9 @@ The website owner does not encourage or endorse bypassing network restrictions, 
                 if (visitedUrls.length >= 3 && !unlocked.includes('proxy_surfer')) {
                     unlockAchievement('proxy_surfer');
                 }
+                if (visitedUrls.length >= 20 && !unlocked.includes('globetrotter')) {
+                    unlockAchievement('globetrotter');
+                }
                 
                 if (currentAccount) {
                     currentAccount.proxyVisits = visitedUrls;
@@ -1935,6 +1956,9 @@ The website owner does not encourage or endorse bypassing network restrictions, 
             if (searchCount >= 5 && !unlocked.includes('search_master')) {
                 unlockAchievement('search_master');
             }
+            if (searchCount >= 20 && !unlocked.includes('speed_demon')) {
+                unlockAchievement('speed_demon');
+            }
             
             if (currentAccount) {
                 currentAccount.searchCount = searchCount;
@@ -1942,10 +1966,21 @@ The website owner does not encourage or endorse bypassing network restrictions, 
             }
         }
 
-        function trackChatMessage() {
+        function trackChatVisit() {
+            const chatVisits = parseInt(localStorage.getItem('coreus_chat_visits') || '0') + 1;
+            localStorage.setItem('coreus_chat_visits', chatVisits.toString());
+            
             const unlocked = getUnlockedAchievements();
             if (!unlocked.includes('chatty')) {
                 unlockAchievement('chatty');
+            }
+            if (chatVisits >= 10 && !unlocked.includes('social_butterfly')) {
+                unlockAchievement('social_butterfly');
+            }
+            
+            if (currentAccount) {
+                currentAccount.chatVisits = chatVisits;
+                setCurrentAccount(currentAccount);
             }
         }
 
@@ -1962,6 +1997,9 @@ The website owner does not encourage or endorse bypassing network restrictions, 
             if (usedTools.length >= 3 && !unlocked.includes('tool_user')) {
                 unlockAchievement('tool_user');
             }
+            if (usedTools.length >= 10 && !unlocked.includes('tool_master')) {
+                unlockAchievement('tool_master');
+            }
             
             if (currentAccount) {
                 currentAccount.usedTools = usedTools;
@@ -1969,13 +2007,86 @@ The website owner does not encourage or endorse bypassing network restrictions, 
             }
         }
 
-        function checkFirstVisit() {
+        function trackFavoriteGame() {
+            const favCount = parseInt(localStorage.getItem('coreus_favorite_count') || '0') + 1;
+            localStorage.setItem('coreus_favorite_count', favCount.toString());
+            
+            const unlocked = getUnlockedAchievements();
+            if (favCount >= 5 && !unlocked.includes('collector')) {
+                unlockAchievement('collector');
+            }
+            if (favCount >= 10 && !unlocked.includes('bookmarker')) {
+                unlockAchievement('bookmarker');
+            }
+            
+            if (currentAccount) {
+                currentAccount.favoriteCount = favCount;
+                setCurrentAccount(currentAccount);
+            }
+        }
+
+        function trackFavoriteRemove() {
+            const favCount = Math.max(0, parseInt(localStorage.getItem('coreus_favorite_count') || '0') - 1);
+            localStorage.setItem('coreus_favorite_count', favCount.toString());
+            
+            if (currentAccount) {
+                currentAccount.favoriteCount = favCount;
+                setCurrentAccount(currentAccount);
+            }
+        }
+
+        function trackTimeAchievements() {
+            const now = new Date();
+            const hour = now.getHours();
+            const unlocked = getUnlockedAchievements();
+            
+            if (hour >= 0 && hour < 5 && !unlocked.includes('night_owl')) {
+                unlockAchievement('night_owl');
+            }
+            if (hour >= 5 && hour < 7 && !unlocked.includes('early_bird')) {
+                unlockAchievement('early_bird');
+            }
+        }
+
+        function trackVeteran() {
+            const now = new Date();
+            const today = now.toDateString();
+            const lastVisit = localStorage.getItem('coreus_last_visit');
+            
+            if (lastVisit !== today) {
+                const daysCount = parseInt(localStorage.getItem('coreus_days_used') || '0') + 1;
+                localStorage.setItem('coreus_days_used', daysCount.toString());
+                localStorage.setItem('coreus_last_visit', today);
+                
+                const unlocked = getUnlockedAchievements();
+                if (daysCount >= 7 && !unlocked.includes('veteran')) {
+                    unlockAchievement('veteran');
+                }
+                
+                if (currentAccount) {
+                    currentAccount.daysUsed = daysCount;
+                    setCurrentAccount(currentAccount);
+                }
+            }
+        }
+
+        let timeAchievementsChecked = false;
+        function trackFirstVisitAndVeteran() {
             const hasVisited = localStorage.getItem('coreus_has_visited');
             if (!hasVisited) {
                 localStorage.setItem('coreus_has_visited', 'true');
+                trackVeteran();
+                trackTimeAchievements();
+                timeAchievementsChecked = true;
                 setTimeout(() => {
                     unlockAchievement('welcome');
                 }, 1000);
+            } else {
+                trackVeteran();
+                if (!timeAchievementsChecked) {
+                    trackTimeAchievements();
+                    timeAchievementsChecked = true;
+                }
             }
         }
 
@@ -2330,7 +2441,7 @@ The website owner does not encourage or endorse bypassing network restrictions, 
 
             previousView = 'chat';
 
-            trackChatMessage();
+            trackChatVisit();
         }
 
         function hideChatView() {
@@ -2744,6 +2855,15 @@ The website owner does not encourage or endorse bypassing network restrictions, 
                 if (currentAccount.searchCount) {
                     window.localStorage.setItem('coreus_search_count', currentAccount.searchCount.toString());
                 }
+                if (currentAccount.chatVisits) {
+                    window.localStorage.setItem('coreus_chat_visits', currentAccount.chatVisits.toString());
+                }
+                if (currentAccount.favoriteCount) {
+                    window.localStorage.setItem('coreus_favorite_count', currentAccount.favoriteCount.toString());
+                }
+                if (currentAccount.daysUsed) {
+                    window.localStorage.setItem('coreus_days_used', currentAccount.daysUsed.toString());
+                }
                 if (currentAccount.gameFavorites) {
                     window.localStorage.setItem('coreus_game_favorites_vrtx', JSON.stringify(currentAccount.gameFavorites.vrtx || []));
                     window.localStorage.setItem('coreus_game_favorites_selenite', JSON.stringify(currentAccount.gameFavorites.selenite || []));
@@ -2771,6 +2891,9 @@ The website owner does not encourage or endorse bypassing network restrictions, 
                 acc.usedTools = JSON.parse(window.localStorage.getItem('coreus_used_tools') || '[]');
                 acc.proxyVisits = JSON.parse(window.localStorage.getItem('coreus_proxy_visits') || '[]');
                 acc.searchCount = parseInt(window.localStorage.getItem('coreus_search_count') || '0');
+                acc.chatVisits = parseInt(window.localStorage.getItem('coreus_chat_visits') || '0');
+                acc.favoriteCount = parseInt(window.localStorage.getItem('coreus_favorite_count') || '0');
+                acc.daysUsed = parseInt(window.localStorage.getItem('coreus_days_used') || '0');
                 acc.gameFavorites = getAllGameFavorites();
                 acc.toolFavorites = getToolFavorites();
                 await saveAccount(acc);
@@ -2842,6 +2965,9 @@ The website owner does not encourage or endorse bypassing network restrictions, 
                 usedTools: JSON.parse(localStorage.getItem('coreus_used_tools') || '[]'),
                 proxyVisits: JSON.parse(localStorage.getItem('coreus_proxy_visits') || '[]'),
                 searchCount: parseInt(localStorage.getItem('coreus_search_count') || '0'),
+                chatVisits: parseInt(localStorage.getItem('coreus_chat_visits') || '0'),
+                favoriteCount: parseInt(localStorage.getItem('coreus_favorite_count') || '0'),
+                daysUsed: parseInt(localStorage.getItem('coreus_days_used') || '0'),
                 gameFavorites: getAllGameFavorites(),
                 toolFavorites: getToolFavorites()
             };
@@ -2884,6 +3010,15 @@ The website owner does not encourage or endorse bypassing network restrictions, 
                 }
                 if (acc.searchCount) {
                     localStorage.setItem('coreus_search_count', acc.searchCount.toString());
+                }
+                if (acc.chatVisits) {
+                    localStorage.setItem('coreus_chat_visits', acc.chatVisits.toString());
+                }
+                if (acc.favoriteCount) {
+                    localStorage.setItem('coreus_favorite_count', acc.favoriteCount.toString());
+                }
+                if (acc.daysUsed) {
+                    localStorage.setItem('coreus_days_used', acc.daysUsed.toString());
                 }
                 if (acc.gameFavorites) {
                     localStorage.setItem('coreus_game_favorites_vrtx', JSON.stringify(acc.gameFavorites.vrtx || []));
