@@ -345,6 +345,10 @@
 </head>
 <body>
     <div class="container">
+        <div id="achievementsCard" onclick="showAchievementsView()" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); border: 2px solid #333; border-radius: 12px; padding: 12px 18px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.5rem;">🏆</span>
+            <span id="achievementsCount" style="color: #fff; font-size: 1rem; font-weight: 600;">0/18</span>
+        </div>
         <div style="position: relative; width: 100%;">
             <h1 class="title">coreus</h1>
         </div>
@@ -986,6 +990,7 @@
     }
     checkFirstVisit();
     trackFirstVisitAndVeteran();
+    updateAchievementsCount();
   });
 
   document.addEventListener("keydown", (e) => {
@@ -1848,6 +1853,7 @@
                 saveAchievements(unlocked);
                 const achievement = achievements.find(a => a.id === achievementId);
                 showAchievementNotification(achievement);
+                updateAchievementsCount();
                 
                 if (currentAccount) {
                     currentAccount.achievements = unlocked;
@@ -1864,6 +1870,16 @@
             setTimeout(() => {
                 notification.style.display = 'none';
             }, 4000);
+        }
+
+        function updateAchievementsCount() {
+            const unlocked = getUnlockedAchievements();
+            const total = achievements.length;
+            const count = unlocked.length;
+            const countEl = document.getElementById('achievementsCount');
+            if (countEl) {
+                countEl.textContent = count + '/' + total;
+            }
         }
 
         function renderAchievements() {
