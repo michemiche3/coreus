@@ -349,6 +349,10 @@
             <span style="font-size: 1.5rem;">🏆</span>
             <span id="achievementsCount" style="color: #fff; font-size: 1rem; font-weight: 600;">0/18</span>
         </div>
+        <div id="profileCard" onclick="showAccountView()" style="position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); border: 2px solid #333; border-radius: 12px; padding: 12px 18px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.5rem;">👤</span>
+            <span id="profileName" style="color: #fff; font-size: 1rem; font-weight: 600;">Log in</span>
+        </div>
         <div style="position: relative; width: 100%;">
             <h1 class="title">coreus</h1>
         </div>
@@ -991,6 +995,7 @@
     checkFirstVisit();
     trackFirstVisitAndVeteran();
     updateAchievementsCount();
+    updateProfileCard();
   });
 
   document.addEventListener("keydown", (e) => {
@@ -1882,6 +1887,17 @@
             }
         }
 
+        function updateProfileCard() {
+            const profileNameEl = document.getElementById('profileName');
+            if (profileNameEl) {
+                if (currentAccount && currentAccount.username) {
+                    profileNameEl.textContent = currentAccount.username;
+                } else {
+                    profileNameEl.textContent = 'Log in';
+                }
+            }
+        }
+
         function renderAchievements() {
             const container = document.getElementById('achievements-list');
             const unlocked = getUnlockedAchievements();
@@ -2650,16 +2666,6 @@
         async function saveAccount(acc) {
             try {
                 suppressHashTrigger = true;
-
-                const snapshot = {
-                    localStorage: getLocalStorageData(),
-                    indexedDB: await getIndexedDBData()
-                };
-
-                if (Object.keys(snapshot.localStorage).length > 0 || Object.keys(snapshot.indexedDB).length > 0) {
-                    window.localStorage.setItem('coreus_account_storage', JSON.stringify(snapshot));
-                }
-
                 window.localStorage.setItem('coreus_account', JSON.stringify(acc));
                 console.log('Account saved:', acc);
             } catch(e) {
@@ -2871,6 +2877,7 @@
                 
                 isApplyingAccount = false;
                 updateAccountView();
+                updateProfileCard();
             } catch(e) {
                 isApplyingAccount = false;
             }
@@ -2894,6 +2901,7 @@
                 window.localStorage.removeItem('coreus_account');
             }
             updateAccountView();
+            updateProfileCard();
         }
 
         function ensureNavbarProfileButton() {
@@ -2943,6 +2951,7 @@
                 notLogged.style.display = 'block';
                 logged.style.display = 'none';
             }
+            updateProfileCard();
         }
 
         async function createAccount() {
@@ -2976,51 +2985,7 @@
             const hash = document.getElementById('loginHash').value.trim();
             const acc = decodeAccount(hash);
             if (acc && acc.username) {
-
-                try {
-                    const storageSaved = localStorage.getItem('coreus_account_storage');
-                    if (storageSaved) {
-                        const snapshot = JSON.parse(storageSaved);
-                        await restoreStorage(snapshot);
-                    }
-                } catch (e) {
-                    console.log('No storage snapshot to restore');
-                }
-
                 await setCurrentAccount(acc);
-
-                if (acc.achievements) {
-                    localStorage.setItem('coreus_achievements', JSON.stringify(acc.achievements));
-                }
-                if (acc.playedGames) {
-                    localStorage.setItem('coreus_played_games', JSON.stringify(acc.playedGames));
-                }
-                if (acc.usedTools) {
-                    localStorage.setItem('coreus_used_tools', JSON.stringify(acc.usedTools));
-                }
-                if (acc.proxyVisits) {
-                    localStorage.setItem('coreus_proxy_visits', JSON.stringify(acc.proxyVisits));
-                }
-                if (acc.searchCount) {
-                    localStorage.setItem('coreus_search_count', acc.searchCount.toString());
-                }
-                if (acc.chatVisits) {
-                    localStorage.setItem('coreus_chat_visits', acc.chatVisits.toString());
-                }
-                if (acc.favoriteCount) {
-                    localStorage.setItem('coreus_favorite_count', acc.favoriteCount.toString());
-                }
-                if (acc.daysUsed) {
-                    localStorage.setItem('coreus_days_used', acc.daysUsed.toString());
-                }
-                if (acc.gameFavorites) {
-                    localStorage.setItem('coreus_game_favorites_vrtx', JSON.stringify(acc.gameFavorites.vrtx || []));
-                    localStorage.setItem('coreus_game_favorites_selenite', JSON.stringify(acc.gameFavorites.selenite || []));
-                }
-                if (acc.toolFavorites) {
-                    localStorage.setItem('coreus_tool_favorites', JSON.stringify(acc.toolFavorites));
-                }
-
                 alert('Logged in as ' + acc.username);
             } else {
                 alert('Invalid hash');
