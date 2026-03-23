@@ -2910,6 +2910,10 @@
                 if (currentAccount.daysUsed) {
                     window.localStorage.setItem('coreus_days_used', currentAccount.daysUsed.toString());
                 }
+                if (currentAccount.totalTimeOnSite) {
+                    window.localStorage.setItem('coreus_total_time', currentAccount.totalTimeOnSite.toString());
+                    totalTimeOnSite = currentAccount.totalTimeOnSite;
+                }
                 if (currentAccount.gameFavorites) {
                     window.localStorage.setItem('coreus_game_favorites_vrtx', JSON.stringify(currentAccount.gameFavorites.vrtx || []));
                     window.localStorage.setItem('coreus_game_favorites_selenite', JSON.stringify(currentAccount.gameFavorites.selenite || []));
@@ -2933,6 +2937,7 @@
         async function setCurrentAccount(acc) {
             setCurrentAccountVar(acc);
             if (acc) {
+                const sessionTime = Math.floor((Date.now() - sessionStartTime) / 1000);
                 acc.achievements = getUnlockedAchievements();
                 acc.playedGames = JSON.parse(window.localStorage.getItem('coreus_played_games') || '[]');
                 acc.usedTools = JSON.parse(window.localStorage.getItem('coreus_used_tools') || '[]');
@@ -2941,6 +2946,7 @@
                 acc.chatVisits = parseInt(window.localStorage.getItem('coreus_chat_visits') || '0');
                 acc.favoriteCount = parseInt(window.localStorage.getItem('coreus_favorite_count') || '0');
                 acc.daysUsed = parseInt(window.localStorage.getItem('coreus_days_used') || '0');
+                acc.totalTimeOnSite = totalTimeOnSite + sessionTime;
                 acc.gameFavorites = getAllGameFavorites();
                 acc.toolFavorites = getToolFavorites();
                 await saveAccount(acc);
@@ -3006,6 +3012,8 @@
             if (!name) {
                 name = 'guest' + Math.floor(1000 + Math.random()*9000);
             }
+            const sessionTime = Math.floor((Date.now() - sessionStartTime) / 1000);
+            const totalSeconds = totalTimeOnSite + sessionTime;
             const acc = { 
                 username: name, 
                 settings: { theme: getCurrentTheme() },
@@ -3017,6 +3025,7 @@
                 chatVisits: parseInt(localStorage.getItem('coreus_chat_visits') || '0'),
                 favoriteCount: parseInt(localStorage.getItem('coreus_favorite_count') || '0'),
                 daysUsed: parseInt(localStorage.getItem('coreus_days_used') || '0'),
+                totalTimeOnSite: totalSeconds,
                 gameFavorites: getAllGameFavorites(),
                 toolFavorites: getToolFavorites()
             };
@@ -3094,6 +3103,19 @@
 
         updateNavbarTime();
 
+        // Time tracking (must be before loadAccount)
+        let sessionStartTime = Date.now();
+        let totalTimeOnSite = parseInt(localStorage.getItem('coreus_total_time') || '0');
+
+        function updateTimeOnSite() {
+            const sessionTime = Math.floor((Date.now() - sessionStartTime) / 1000);
+            const totalSeconds = totalTimeOnSite + sessionTime;
+            localStorage.setItem('coreus_total_time', totalSeconds.toString());
+            localStorage.setItem('coreus_last_session_start', sessionStartTime.toString());
+        }
+
+        setInterval(updateTimeOnSite, 1000);
+
         loadAccount();
 
         // Custom Cursor System
@@ -3163,19 +3185,6 @@
             document.getElementById('urlInput').focus();
             ensureNavbarProfileButton();
         });
-
-        // Time tracking
-        let sessionStartTime = Date.now();
-        let totalTimeOnSite = parseInt(localStorage.getItem('coreus_total_time') || '0');
-
-        function updateTimeOnSite() {
-            const sessionTime = Math.floor((Date.now() - sessionStartTime) / 1000);
-            const totalSeconds = totalTimeOnSite + sessionTime;
-            localStorage.setItem('coreus_total_time', totalSeconds.toString());
-            localStorage.setItem('coreus_last_session_start', sessionStartTime.toString());
-        }
-
-        setInterval(updateTimeOnSite, 1000);
 
         function formatTime(seconds) {
             const hrs = Math.floor(seconds / 3600);
@@ -3279,6 +3288,22 @@
             previousView = 'stats';
         }
 
+        function updateStatsTime() {
+            const statsView = document.getElementById('statsView');
+            if (statsView && statsView.style.display !== 'none') {
+                const sessionTime = Math.floor((Date.now() - sessionStartTime) / 1000);
+                const totalSeconds = totalTimeOnSite + sessionTime;
+                
+                const totalTimeEl = document.getElementById('statsTotalTime');
+                const sessionTimeEl = document.getElementById('statsSessionTime');
+                
+                if (totalTimeEl) totalTimeEl.textContent = formatTimeShort(totalSeconds);
+                if (sessionTimeEl) sessionTimeEl.textContent = formatTimeShort(sessionTime);
+            }
+        }
+
+        setInterval(updateStatsTime, 1000);
+
         loadVisitorCount();
     </script>
     <div id="accountView" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary-bg); background-image: radial-gradient(circle, #333 1px, transparent 1px); background-size: 40px 40px; z-index:2000; overflow-y:auto; padding:20px 20px 100px 20px;">
@@ -3355,11 +3380,11 @@
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                     <div style="background: var(--tertiary-bg); border-radius: 16px; padding: 25px; text-align: center;">
-                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--accent-color); font-family: monospace;" id="statsTotalTime">00:00:00</div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #fff; font-family: monospace;" id="statsTotalTime">00:00:00</div>
                         <div style="color: var(--secondary-text); font-size: 0.9rem; margin-top: 8px;">Total Time on Coreus</div>
                     </div>
                     <div style="background: var(--tertiary-bg); border-radius: 16px; padding: 25px; text-align: center;">
-                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--accent-light); font-family: monospace;" id="statsSessionTime">00:00:00</div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #fff; font-family: monospace;" id="statsSessionTime">00:00:00</div>
                         <div style="color: var(--secondary-text); font-size: 0.9rem; margin-top: 8px;">Current Session</div>
                     </div>
                 </div>
