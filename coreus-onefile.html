@@ -3210,7 +3210,7 @@
 
         function loadVisitorCount() {
             $.ajax({
-                url: 'https://simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews%2Cvisitors%2Chistogram%2Cpages%2Ccountries%2Creferred&_=' + Date.now(),
+                url: 'https://dashboard.simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews,visitors,histogram,pages,countries&_=' + Date.now(),
                 dataType: 'jsonp',
                 success: function(data) {
                     analyticsData = data;
@@ -3270,12 +3270,12 @@
             if (analyticsData.pageviews && pageviewsEl) pageviewsEl.textContent = analyticsData.pageviews.toLocaleString();
             if (analyticsData.visitors && visitorsEl) visitorsEl.textContent = analyticsData.visitors.toLocaleString();
             
-            if (analyticsData.countries && countriesEl) {
-                const topCountries = Object.entries(analyticsData.countries)
-                    .sort((a, b) => b[1] - a[1])
+            if (analyticsData.countries && countriesEl && Array.isArray(analyticsData.countries)) {
+                const topCountries = analyticsData.countries
+                    .sort((a, b) => b.pageviews - a.pageviews)
                     .slice(0, 5);
-                countriesEl.innerHTML = topCountries.map(([country, count]) => 
-                    `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:var(--tertiary-bg);border-radius:20px;font-size:0.85rem;">${country} <span style="color:var(--secondary-text);">${count}</span></span>`
+                countriesEl.innerHTML = topCountries.map(c => 
+                    `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:var(--tertiary-bg);border-radius:20px;font-size:0.85rem;">${c.value.toUpperCase()} <span style="color:var(--secondary-text);">${c.pageviews}</span></span>`
                 ).join('');
             }
         }
