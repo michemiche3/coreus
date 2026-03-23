@@ -404,7 +404,6 @@
             <input
                 type="text"
                 class="search-input"
-                placeholder="Search with DuckDuckGo or enter and address ..."
                 id="urlInput"
             />
         </div>
@@ -3118,6 +3117,20 @@
         setInterval(updateTimeOnSite, 1000);
 
         loadAccount();
+
+        // Random search placeholder
+        const searchPlaceholders = [
+            "lmaooooooo",
+            "The Dark Side",
+            "bruh",
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH",
+            '"geekHUMtravailler"',
+            "SIX SEVEN 67 67 67 67 67"
+        ];
+        const urlInput = document.getElementById('urlInput');
+        if (urlInput) {
+            urlInput.placeholder = searchPlaceholders[Math.floor(Math.random() * searchPlaceholders.length)];
+        }
 
         // Custom Cursor System
         (function() {
