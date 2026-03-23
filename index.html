@@ -175,7 +175,7 @@
 
         .search-input:focus {
             background-color: var(--secondary-bg);
-            box-shadow: 0 0 0 2px var(--tertiary-bg), 0 0 15px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 0 0 2px var(--border-color);
         }
 
         .search-input::placeholder {
@@ -411,8 +411,9 @@
 
         <div class="status" id="statusDiv"></div>
         
-        <div id="visitorCounter" style="text-align: center; padding: 10px; color: #666; font-size: 0.85rem; margin-top: 10px;">
-            Loading visitor count...
+        <div id="visitorCounter" style="text-align: center; color: var(--secondary-text); font-size: 0.9rem; margin-top: 15px;">
+            <i class="fas fa-users" style="margin-right: 8px; color: var(--primary-text);"></i>
+            <span id="visitorCountText">Loading...</span>
         </div>
         
         <div id="extra-div" style="display:none;">
@@ -3215,16 +3216,16 @@
                 success: function(data) {
                     analyticsData = data;
                     const pageviews = data.pageviews || 0;
-                    const visitorEl = document.getElementById('visitorCounter');
-                    if (visitorEl) {
-                        visitorEl.textContent = 'You are the ' + pageviews.toLocaleString() + 'th visitor this month.';
+                    const visitorCountText = document.getElementById('visitorCountText');
+                    if (visitorCountText) {
+                        visitorCountText.textContent = pageviews.toLocaleString() + ' visits this month';
                     }
                     updateStatsView();
                 },
                 error: function() {
-                    const visitorEl = document.getElementById('visitorCounter');
-                    if (visitorEl) {
-                        visitorEl.style.display = 'none';
+                    const visitorCountText = document.getElementById('visitorCountText');
+                    if (visitorCountText) {
+                        visitorCountText.textContent = 'Stats unavailable';
                     }
                 }
             });
