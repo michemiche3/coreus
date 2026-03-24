@@ -2508,7 +2508,8 @@
 
         function hideAllViews() {
             document.querySelector('.container').style.display = 'none';
-            ['gamesView','toolsView','aboutView','settingsView','chatView','aiView','accountView', 'proxyView', 'achievementsView', 'privacyPolicyView', 'disclaimerView', 'statsView'].forEach(id => {
+            stopFpsCounter();
+            ['gamesView','toolsView','aboutView','settingsView','chatView','aiView','accountView', 'proxyView', 'achievementsView', 'privacyPolicyView', 'disclaimerView', 'statsView', 'gamePopup'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'none';
             });
