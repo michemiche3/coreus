@@ -667,11 +667,19 @@
         }
 
         function toggleGameFullscreen() {
-            const container = document.getElementById('gameContainer');
+            const iframe = document.getElementById('gameIframe');
             if (!document.fullscreenElement) {
-                container.requestFullscreen().catch(err => {});
+                if (iframe.requestFullscreen) {
+                    iframe.requestFullscreen().catch(err => {});
+                } else if (iframe.webkitRequestFullscreen) {
+                    iframe.webkitRequestFullscreen();
+                }
             } else {
-                document.exitFullscreen();
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
             }
         }
 
