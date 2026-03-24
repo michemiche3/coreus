@@ -3511,7 +3511,7 @@
 
     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
-    <script defer src="https://js.puter.com/v2/"></script>
+    <script async src="https://js.puter.com/v2/"></script>
     <script>
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -3556,30 +3556,46 @@
         }
 
         let pendingAiMessage = null;
+        let puterReady = false;
+
+        function checkPuterReady() {
+            if (typeof puter !== 'undefined' && puter && puter.ai) {
+                puterReady = true;
+            }
+        }
+        checkPuterReady();
+        
+        window.addEventListener('load', checkPuterReady);
 
         async function isPuterLoggedIn() {
+            if (!puterReady) return false;
             try {
-
                 const user = await puter.auth.getUser();
                 return !!user;
             } catch (error) {
-
                 return false;
             }
         }
 
         function showPuterLoginModal(message) {
             pendingAiMessage = message;
-            document.getElementById('puterLoginModal').style.display = 'flex';
+            const modal = document.getElementById('puterLoginModal');
+            if (modal) modal.style.display = 'flex';
         }
 
         function closePuterLoginModal() {
-            document.getElementById('puterLoginModal').style.display = 'none';
+            const modal = document.getElementById('puterLoginModal');
+            if (modal) modal.style.display = 'none';
             pendingAiMessage = null;
         }
 
         async function handlePuterSignIn() {
+            if (!puterReady) {
+                alert('AI service is unavailable. Please try again later.');
+                return;
+            }
             const signInBtn = document.getElementById('puterSignInBtn');
+            if (!signInBtn) return;
             signInBtn.disabled = true;
             signInBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Signing in...';
 
@@ -3605,6 +3621,11 @@
         }
 
         async function sendAiMessage(messageText = null) {
+            if (!puterReady) {
+                alert('AI service is unavailable. Please try again later.');
+                return;
+            }
+
             const input = document.getElementById('aiMessageInput');
             let message = messageText || input.value.trim();
             
@@ -3629,7 +3650,7 @@
             addMessageToChat('user', message);
 
             const sendBtn = document.getElementById('aiSendBtn');
-            sendBtn.disabled = true;
+            if (sendBtn) sendBtn.disabled = true;
 
             addLoadingMessage();
 
