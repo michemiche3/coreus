@@ -396,6 +396,40 @@
             <span style="font-size: 1.5rem;">👤</span>
             <span id="profileName" style="color: #fff; font-size: 1rem; font-weight: 600;">Log in</span>
         </div>
+        <div id="backendSelector" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); border: 2px solid #333; border-radius: 12px; padding: 8px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+            <span style="color: var(--secondary-text); font-size: 0.7rem; opacity: 0.7;">backend</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i id="vrtxIcon" class="fas fa-cube" style="color: var(--accent-color); font-size: 1.2rem; cursor: pointer; transition: all 0.3s;" onclick="setGameBackend('vrtx')"></i>
+                <div id="backendSwitch" style="width: 36px; height: 20px; background: var(--accent-color); border-radius: 10px; position: relative; cursor: pointer; transition: all 0.3s;" onclick="toggleBackend()">
+                    <div id="switchKnob" style="width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+                </div>
+                <i id="seleniteIcon" class="fas fa-moon" style="color: #666; font-size: 1.1rem; cursor: pointer; transition: all 0.3s;" onclick="setGameBackend('selenite')"></i>
+            </div>
+            <i class="fas fa-question-circle" style="position: absolute; top: 4px; right: 6px; font-size: 0.7rem; color: var(--secondary-text); cursor: pointer; opacity: 0.6;" onclick="showBackendInfoPopup()"></i>
+        </div>
+
+        <div id="backendInfoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; justify-content: center; align-items: center;" onclick="closeBackendInfoPopup(event)">
+            <div style="background: #111; border-radius: 16px; padding: 30px; max-width: 450px; width: 90%; border: 2px solid #333; box-shadow: 0 20px 60px rgba(0,0,0,0.8);" onclick="event.stopPropagation()">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 style="color: #fff; font-size: 1.4rem; margin: 0;">Backend Info</h2>
+                    <i class="fas fa-times" style="color: #666; font-size: 1.2rem; cursor: pointer;" onclick="closeBackendInfoPopup()"></i>
+                </div>
+                <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--accent-color);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i class="fas fa-cube" style="color: var(--accent-color); font-size: 1.5rem;"></i>
+                        <span style="color: #fff; font-size: 1.2rem; font-weight: 600;">VRTX</span>
+                    </div>
+                    <p style="color: var(--secondary-text); font-size: 0.9rem; line-height: 1.5; margin: 0;">Local backend with 100+ games. All games are mobile-friendly and load instantly.</p>
+                </div>
+                <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; border: 1px solid #9d4edd;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i class="fas fa-moon" style="color: #9d4edd; font-size: 1.5rem;"></i>
+                        <span style="color: #fff; font-size: 1.2rem; font-weight: 600;">Selenite</span>
+                    </div>
+                    <p style="color: var(--secondary-text); font-size: 0.9rem; line-height: 1.5; margin: 0;">External backend with 500+ games. Games load from external servers.</p>
+                </div>
+            </div>
+        </div>
         <div style="position: relative; width: 100%;">
             <h1 class="title">coreus</h1>
         </div>
@@ -562,34 +596,6 @@
             <button id="puterSignInBtn" style="width: 100%; padding: 1rem; background: white; border: none; color: #000; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 255, 255, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255, 255, 255, 0.2)';">
                 <i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i> Login with Puter
             </button>
-        </div>
-    </div>
-
-    <div id="backendSelectModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3500; justify-content: center; align-items: center;">
-        <div style="background: var(--card-bg); padding: 2.5rem; border-radius: 15px; width: 90%; max-width: 450px; text-align: center; border: 1px solid var(--border-color); position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
-            <i class="fas fa-server" style="font-size: 3rem; color: var(--accent-color); margin-bottom: 1rem; display: block;"></i>
-            <h2 style="color: var(--primary-text); margin-bottom: 0.5rem; font-size: 1.5rem;">Choose Your Backend</h2>
-            <p style="color: var(--secondary-text); margin-bottom: 1.5rem; line-height: 1.5;">Select a game backend to use. This choice will be saved for future visits.</p>
-            
-            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
-                <button id="selectVrtxBtn" onclick="selectBackend('vrtx')" style="width: 100%; padding: 1.2rem; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid var(--accent-color); border-radius: 12px; color: var(--primary-text); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.8rem; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 25px rgba(76, 175, 80, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(76, 175, 80, 0.2)';">
-                    <i class="fas fa-cube" style="font-size: 1.3rem;"></i>
-                    <div style="text-align: left;">
-                        <div>VRTX</div>
-                        <div style="font-size: 0.75rem; font-weight: 400; opacity: 0.7;">Local - All games mobile-friendly</div>
-                    </div>
-                </button>
-                
-                <button id="selectSeleniteBtn" onclick="selectBackend('selenite')" style="width: 100%; padding: 1.2rem; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid #9d4edd; border-radius: 12px; color: var(--primary-text); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.8rem; box-shadow: 0 4px 15px rgba(157, 78, 221, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 25px rgba(157, 78, 221, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(157, 78, 221, 0.2)';">
-                    <i class="fas fa-moon" style="font-size: 1.3rem; color: #9d4edd;"></i>
-                    <div style="text-align: left;">
-                        <div style="color: #9d4edd;">Selenite</div>
-                        <div style="font-size: 0.75rem; font-weight: 400; opacity: 0.7;">External - 850+ games</div>
-                    </div>
-                </button>
-            </div>
-            
-            <p style="color: var(--secondary-text); font-size: 0.8rem; margin-top: 0.5rem;">You can change this anytime in Settings</p>
         </div>
     </div>
 
@@ -1417,19 +1423,15 @@
         }
 
         function checkFirstVisit() {
-            const hasChosenBackend = localStorage.getItem('gameBackendChoice');
-            if (!hasChosenBackend) {
-                showBackendSelectModal();
+            const savedChoice = localStorage.getItem('gameBackendChoice');
+            if (savedChoice === 'selenite') {
+                gameBackend = 'selenite';
+                toolsBackend = 'fallback';
             } else {
-
-                const savedChoice = localStorage.getItem('gameBackendChoice');
-                if (savedChoice === 'selenite') {
-                    gameBackend = 'selenite';
-                    toolsBackend = 'fallback';
-                } else {
-                    gameBackend = 'auto';
-                }
+                gameBackend = 'auto';
             }
+
+            setGameBackend(gameBackend === 'selenite' ? 'selenite' : 'vrtx');
         }
 
         async function applyCloaking(option) {
@@ -1634,16 +1636,44 @@
             gameBackend = backend;
             localStorage.setItem('gameBackend', gameBackend);
 
+            const vrtxIcon = document.getElementById('vrtxIcon');
+            const seleniteIcon = document.getElementById('seleniteIcon');
+            const switchEl = document.getElementById('backendSwitch');
+            const knob = document.getElementById('switchKnob');
+
             if (backend === 'selenite') {
                 localStorage.setItem('toolsBackend', 'fallback');
                 toolsBackend = 'fallback';
                 localStorage.setItem('gameBackendChoice', 'selenite');
-                showStatus(`Game backend set to Selenite (tools set to auto fallback)`, 'success');
+                vrtxIcon.style.color = '#666';
+                seleniteIcon.style.color = '#9d4edd';
+                switchEl.style.background = '#9d4edd';
+                knob.style.left = '18px';
             } else {
                 localStorage.setItem('gameBackendChoice', 'vrtx');
-                showStatus(`Game backend set to ${gameBackend}`, 'success');
+                vrtxIcon.style.color = 'var(--accent-color)';
+                seleniteIcon.style.color = '#666';
+                switchEl.style.background = 'var(--accent-color)';
+                knob.style.left = '2px';
             }
-            setTimeout(hideStatus, 1200);
+        }
+
+        function toggleBackend() {
+            if (gameBackend === 'selenite') {
+                setGameBackend('vrtx');
+            } else {
+                setGameBackend('selenite');
+            }
+        }
+
+        function showBackendInfoPopup() {
+            document.getElementById('backendInfoPopup').style.display = 'flex';
+        }
+
+        function closeBackendInfoPopup(event) {
+            if (!event || event.target.id === 'backendInfoPopup') {
+                document.getElementById('backendInfoPopup').style.display = 'none';
+            }
         }
 
         function saveSettings() {
