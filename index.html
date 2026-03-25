@@ -480,6 +480,10 @@
                     <i class="fas fa-redo" style="font-size: 14px;"></i>
                 </button>
 
+                <button onclick="openProxyHome()" style="background: none; border: none; color: #fff; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: background 0.2s;" title="Home">
+                    <i class="fas fa-home" style="font-size: 14px;"></i>
+                </button>
+
                 <div style="flex: 1; background: #1a1a1a; border-radius: 20px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; border: 1px solid #3d3d3d;">
                     <i id="proxyLockIcon" class="fas fa-lock" style="color: #28c840; font-size: 11px;"></i>
                     <input type="text" id="proxyUrlInput" placeholder="Search or enter URL..." style="background: transparent; border: none; color: #fff; width: 100%; font-size: 13px; outline: none;" onkeypress="if(event.key==='Enter'){proxyNavigate();}">
@@ -498,6 +502,46 @@
             <div id="proxyEmptyState" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #666;">
                 <i class="fas fa-globe" style="font-size: 48px; margin-bottom: 15px; color: #888;"></i>
                 <p style="font-size: 14px;">Enter a URL to browse the web</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="proxyHomeView" style="display: none; position: fixed; top: 10px; left: 10px; right: 10px; bottom: 90px; background: #0a0a0a; background-image: radial-gradient(circle, #333 1px, transparent 1px); background-size: 40px 40px; z-index: 2000; overflow-y: auto; border-radius: 12px; padding: 40px 20px;">
+        <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; margin-bottom: 10px; color: #fff;">
+                <i class="fas fa-globe" style="margin-right: 10px;"></i>Coreus Proxy
+            </div>
+            <div style="color: #666; font-size: 0.85rem; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 0.1em;">Your Gateway to the Web</div>
+
+            <div style="position: relative; margin-bottom: 50px;">
+                <i class="fas fa-search" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #555; font-size: 1rem;"></i>
+                <input type="text" id="proxyHomeSearch" placeholder="Search the web..." style="width: 100%; padding: 16px 50px 16px 50px; font-size: 1rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 50px; color: #fff; outline: none; transition: all 0.3s;" onkeypress="if(event.key==='Enter'){proxyHomeSearch()}">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 10px;">
+                <span style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">Bookmarks</span>
+                <button onclick="showAddProxyBookmarkModal()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #888; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s;"><i class="fas fa-plus" style="margin-right: 5px;"></i>Add</button>
+            </div>
+
+            <div id="proxyBookmarksGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; margin-bottom: 30px;"></div>
+
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="https://youtube.com" onclick="proxyOpenUrl(this.href); return false;" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 25px; color: #888; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; text-decoration: none;"><i class="fab fa-youtube" style="margin-right: 6px;"></i>YouTube</a>
+                <a href="https://reddit.com" onclick="proxyOpenUrl(this.href); return false;" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 25px; color: #888; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; text-decoration: none;"><i class="fab fa-reddit" style="margin-right: 6px;"></i>Reddit</a>
+                <a href="https://discord.com" onclick="proxyOpenUrl(this.href); return false;" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 25px; color: #888; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; text-decoration: none;"><i class="fab fa-discord" style="margin-right: 6px;"></i>Discord</a>
+                <a href="https://github.com" onclick="proxyOpenUrl(this.href); return false;" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 25px; color: #888; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; text-decoration: none;"><i class="fab fa-github" style="margin-right: 6px;"></i>GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="proxyBookmarkModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center;">
+        <div style="background: #111; border-radius: 20px; padding: 30px; width: 90%; max-width: 350px; border: 1px solid #333;">
+            <div style="font-size: 1.2rem; color: #fff; margin-bottom: 20px;">Add Bookmark</div>
+            <input type="text" id="proxyBookmarkTitle" placeholder="Title (e.g. YouTube)" style="width: 100%; padding: 12px 14px; background: #0a0a0a; border: 2px solid #333; border-radius: 10px; color: #fff; font-size: 0.95rem; margin-bottom: 12px; outline: none;">
+            <input type="text" id="proxyBookmarkUrl" placeholder="URL (e.g. https://youtube.com)" style="width: 100%; padding: 12px 14px; background: #0a0a0a; border: 2px solid #333; border-radius: 10px; color: #fff; font-size: 0.95rem; margin-bottom: 20px; outline: none;">
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="closeProxyBookmarkModal()" style="background: transparent; border: 1px solid #333; color: #888; padding: 10px 20px; border-radius: 10px; cursor: pointer;">Cancel</button>
+                <button onclick="saveProxyBookmark()" style="background: #4CAF50; border: none; color: #fff; padding: 10px 20px; border-radius: 10px; cursor: pointer;">Save</button>
             </div>
         </div>
     </div>
@@ -2570,17 +2614,23 @@
         function showProxyView() {
             hideAllViews();
             previousView = 'proxy';
-            document.getElementById('proxyView').style.display = 'block';
+            openProxyHome();
         }
 
         let proxyHistory = [];
         let proxyHistoryIndex = -1;
 
         function proxyNavigate() {
+            document.getElementById('proxyHomeView').style.display = 'none';
             const urlInput = document.getElementById('proxyUrlInput');
             const inputUrl = urlInput.value.trim();
             
             if (!inputUrl) {
+                return;
+            }
+
+            if (inputUrl === 'coreus://home') {
+                openProxyHome();
                 return;
             }
 
@@ -2668,6 +2718,136 @@
             document.getElementById('proxyEmptyState').style.display = 'block';
             proxyHistory = [];
             proxyHistoryIndex = -1;
+        }
+
+        function openProxyHome() {
+            hideAllViews();
+            document.getElementById('proxyView').style.display = 'block';
+            document.getElementById('proxyHomeView').style.display = 'none';
+            document.getElementById('proxyEmptyState').style.display = 'none';
+            document.getElementById('proxyTabTitle').textContent = 'Coreus Proxy';
+            document.getElementById('proxyUrlInput').value = 'coreus://home';
+            
+            const iframe = document.getElementById('proxyIframe');
+            const homeHtml = getProxyHomeHtml();
+            iframe.src = 'data:text/html;charset=utf-8,' + encodeURIComponent(homeHtml);
+            
+            if (proxyHistoryIndex < proxyHistory.length - 1) {
+                proxyHistory = proxyHistory.slice(0, proxyHistoryIndex + 1);
+            }
+            proxyHistory.push('coreus://home');
+            proxyHistoryIndex = proxyHistory.length - 1;
+        }
+
+        function getProxyHomeHtml() {
+            const bookmarks = JSON.parse(localStorage.getItem('coreus_proxy_bookmarks') || '[]');
+            let bookmarksHtml = '';
+            if (bookmarks.length === 0) {
+                bookmarksHtml = '<div style="color: #555; font-size: 0.9rem; grid-column: 1/-1; text-align: center; padding: 20px;">No bookmarks yet</div>';
+            } else {
+                bookmarks.forEach((b, i) => {
+                    bookmarksHtml += `<div onclick="window.parent.postMessage({type:'bookmark',url:'${b.url}'},'*')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'"><div style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:1rem;color:#888;"><i class="fas fa-bookmark"></i></div><div style="font-size:0.75rem;color:#888;">${b.title}</div></div>`;
+                });
+            }
+            return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;background:#0a0a0a;background-image:radial-gradient(circle,#333 1px,transparent 1px);background-size:40px 40px;color:#fff;display:flex;flex-direction:column;align-items:center;padding:60px 20px}.logo{font-size:2.5rem;font-weight:300;letter-spacing:0.1em;margin-bottom:8px}.logo i{margin-right:10px}.subtitle{color:#555;font-size:0.8rem;margin-bottom:35px;text-transform:uppercase;letter-spacing:0.1em}.search{position:relative;width:100%;max-width:500px;margin-bottom:40px}.search input{width:100%;padding:16px 50px 16px 50px;font-size:1rem;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);border-radius:50px;color:#fff;outline:none;transition:all 0.3s}.search input:focus{background:rgba(255,255,255,0.08);border-color:rgba(76,175,80,0.5)}.search input::placeholder{color:#555}.search i{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#555}.section-title{color:#666;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:15px;align-self:flex-start;max-width:500px;width:100%}.bookmarks{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px;max-width:500px;width:100%;margin-bottom:25px}.quick-links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:500px}.quick-links a{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);padding:10px 18px;border-radius:25px;color:#777;font-size:0.85rem;text-decoration:none;transition:all 0.3s}.quick-links a:hover{background:rgba(255,255,255,0.1);color:#fff}</style></head><body><div class="logo"><i class="fas fa-globe"></i>Coreus Proxy</div><div class="subtitle">Your Gateway to the Web</div><div class="search"><i class="fas fa-search"></i><input type="text" placeholder="Search the web..." onkeypress="if(event.key==='Enter'){const q=this.value.trim();if(q)window.parent.postMessage({type:'search',query:q},'*')}"></input></div><div class="section-title">Bookmarks</div><div class="bookmarks">${bookmarksHtml}</div><div class="quick-links"><a href="https://youtube.com" onclick="window.parent.postMessage({type:'bookmark',url:this.href},'*');return false"><i class="fab fa-youtube"></i> YouTube</a><a href="https://reddit.com" onclick="window.parent.postMessage({type:'bookmark',url:this.href},'*');return false"><i class="fab fa-reddit"></i> Reddit</a><a href="https://discord.com" onclick="window.parent.postMessage({type:'bookmark',url:this.href},'*');return false"><i class="fab fa-discord"></i> Discord</a><a href="https://github.com" onclick="window.parent.postMessage({type:'bookmark',url:this.href},'*');return false"><i class="fab fa-github"></i> GitHub</a></div></body></html>`;
+        }
+
+        function proxyOpenUrl(url) {
+            document.getElementById('proxyHomeView').style.display = 'none';
+            document.getElementById('proxyTabTitle').textContent = new URL(url).hostname;
+            document.getElementById('proxyUrlInput').value = url;
+            document.getElementById('proxyEmptyState').style.display = 'none';
+            
+            const iframe = document.getElementById('proxyIframe');
+            const proxyUrl = selectedProxy + encodeUrl(url);
+            iframe.src = proxyUrl;
+            
+            if (proxyHistoryIndex < proxyHistory.length - 1) {
+                proxyHistory = proxyHistory.slice(0, proxyHistoryIndex + 1);
+            }
+            proxyHistory.push(url);
+            proxyHistoryIndex = proxyHistory.length - 1;
+        }
+
+        window.addEventListener('message', function(e) {
+            if (e.data && e.data.type === 'search') {
+                const searchUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(e.data.query);
+                proxyOpenUrl(searchUrl);
+            } else if (e.data && e.data.type === 'bookmark') {
+                proxyOpenUrl(e.data.url);
+            }
+        });
+
+        let proxyBookmarks = JSON.parse(localStorage.getItem('coreus_proxy_bookmarks') || '[]');
+
+        function renderProxyBookmarks() {
+            const grid = document.getElementById('proxyBookmarksGrid');
+            grid.innerHTML = '';
+            
+            if (proxyBookmarks.length === 0) {
+                grid.innerHTML = '<div style="color: #444; font-size: 0.85rem; grid-column: 1/-1; text-align: center;">No bookmarks yet</div>';
+                return;
+            }
+            
+            proxyBookmarks.forEach((bookmark, index) => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative;';
+                card.onclick = () => proxyOpenUrl(bookmark.url);
+                
+                const icon = document.createElement('div');
+                icon.style.cssText = 'width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;';
+                icon.innerHTML = getProxyFavicon(bookmark.title);
+                
+                const title = document.createElement('div');
+                title.style.cssText = 'font-size: 0.75rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center;';
+                title.textContent = bookmark.title;
+                
+                const delBtn = document.createElement('button');
+                delBtn.innerHTML = '<i class="fas fa-times" style="font-size: 0.6rem;"></i>';
+                delBtn.style.cssText = 'position: absolute; top: 4px; right: 4px; opacity: 0; background: rgba(239,68,68,0.8); border: none; color: #fff; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s;';
+                delBtn.onclick = (e) => { e.stopPropagation(); deleteProxyBookmark(index); };
+                card.onmouseenter = () => delBtn.style.opacity = '1';
+                card.onmouseleave = () => delBtn.style.opacity = '0';
+                
+                card.appendChild(delBtn);
+                card.appendChild(icon);
+                card.appendChild(title);
+                grid.appendChild(card);
+            });
+        }
+
+        function getProxyFavicon(title) {
+            const icons = { youtube: '<i class="fab fa-youtube" style="color:#ff0000;font-size:1rem;"></i>', reddit: '<i class="fab fa-reddit" style="color:#ff4500;font-size:1rem;"></i>', discord: '<i class="fab fa-discord" style="color:#5865f2;font-size:1rem;"></i>', github: '<i class="fab fa-github" style="color:#fff;font-size:1rem;"></i>', twitter: '<i class="fab fa-twitter" style="color:#1da1f2;font-size:1rem;"></i>', spotify: '<i class="fab fa-spotify" style="color:#1db954;font-size:1rem;"></i>' };
+            const t = title.toLowerCase();
+            for (let k in icons) if (t.includes(k)) return icons[k];
+            return '<i class="fas fa-bookmark" style="color:#888;font-size:0.9rem;"></i>';
+        }
+
+        function showAddProxyBookmarkModal() {
+            document.getElementById('proxyBookmarkModal').style.display = 'flex';
+            document.getElementById('proxyBookmarkTitle').value = '';
+            document.getElementById('proxyBookmarkUrl').value = '';
+        }
+
+        function closeProxyBookmarkModal() {
+            document.getElementById('proxyBookmarkModal').style.display = 'none';
+        }
+
+        function saveProxyBookmark() {
+            const title = document.getElementById('proxyBookmarkTitle').value.trim();
+            let url = document.getElementById('proxyBookmarkUrl').value.trim();
+            if (!title || !url) return;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+            proxyBookmarks.push({ title, url });
+            localStorage.setItem('coreus_proxy_bookmarks', JSON.stringify(proxyBookmarks));
+            renderProxyBookmarks();
+            closeProxyBookmarkModal();
+        }
+
+        function deleteProxyBookmark(index) {
+            proxyBookmarks.splice(index, 1);
+            localStorage.setItem('coreus_proxy_bookmarks', JSON.stringify(proxyBookmarks));
+            renderProxyBookmarks();
         }
 
         function showSettingsView() {
