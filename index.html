@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coreus</title>
-    <meta name="description" content="Coreus is the truly completely unblockable unblocked browser game (UBG). Play 500+ games, browse the web with proxy, watch anime streaming for free, chat with friends, earn achievements, and more. No ads, beautiful UI.">
-    <meta name="keywords" content="unblocked games, UBG, proxy, browser games, free games, multiplayer chat, achievements, streaming, unblockable, Coreus">
+    <meta name="description" content="Coreus is the truly completely unblockable unblocked browser game (UBG). Play 500+ games, browse the web with proxy, chat with friends, earn achievements, and more. No ads, beautiful UI.">
+    <meta name="keywords" content="unblocked games, UBG, proxy, browser games, free games, multiplayer chat, achievements, unblockable, Coreus">
     <meta name="author" content="n00dle">
     <meta name="robots" content="index, follow">
     <meta property="og:title" content="Coreus">
-    <meta property="og:description" content="Play 500+ unblocked games, browse the web with proxy, stream anime, chat with friends, earn achievements. The most feature-rich unblocked games site.">
+    <meta property="og:description" content="Play 500+ unblocked games, browse the web with proxy, chat with friends, earn achievements. The most feature-rich unblocked games site.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://noodlelover1.github.io/coreus/">
     <meta property="og:image" content="https://raw.githubusercontent.com/noodlelover1/coreus/main/icon.svg">
@@ -3743,20 +3743,58 @@
             $.ajax({
                 url: 'https://dashboard.simpleanalytics.com/noodlelover1.github.io.json?version=6&fields=pageviews,visitors,histogram,pages,countries&_=' + Date.now(),
                 dataType: 'jsonp',
-                success: function(data) {
-                    analyticsData = data;
-                    const pageviews = data.pageviews || 0;
-                    const visitorCountText = document.getElementById('visitorCountText');
-                    if (visitorCountText) {
-                        visitorCountText.textContent = pageviews.toLocaleString() + ' visits this month';
-                    }
-                    updateStatsView();
+                success: function(data1) {
+                    $.ajax({
+                        url: 'https://dashboard.simpleanalytics.com/n00dle.is-a.dev.json?version=6&fields=pageviews,visitors,histogram,pages,countries&_=' + Date.now(),
+                        dataType: 'jsonp',
+                        success: function(data2) {
+                            const pageviews1 = data1.pageviews || 0;
+                            const pageviews2 = data2.pageviews || 0;
+                            const totalPageviews = pageviews1 + pageviews2;
+                            analyticsData = {
+                                pageviews: totalPageviews,
+                                visitors: (data1.visitors || 0) + (data2.visitors || 0),
+                                histogram: data1.histogram || [],
+                                pages: (data1.pages || []).concat(data2.pages || []),
+                                countries: data1.countries || []
+                            };
+                            const visitorCountText = document.getElementById('visitorCountText');
+                            if (visitorCountText) {
+                                visitorCountText.textContent = totalPageviews.toLocaleString() + ' visits this month';
+                            }
+                            updateStatsView();
+                        },
+                        error: function() {
+                            const pageviews = data1.pageviews || 0;
+                            const visitorCountText = document.getElementById('visitorCountText');
+                            if (visitorCountText) {
+                                visitorCountText.textContent = pageviews.toLocaleString() + ' visits this month';
+                            }
+                            analyticsData = data1;
+                            updateStatsView();
+                        }
+                    });
                 },
                 error: function() {
-                    const visitorCountText = document.getElementById('visitorCountText');
-                    if (visitorCountText) {
-                        visitorCountText.textContent = 'Stats unavailable';
-                    }
+                    $.ajax({
+                        url: 'https://dashboard.simpleanalytics.com/n00dle.is-a.dev.json?version=6&fields=pageviews,visitors,histogram,pages,countries&_=' + Date.now(),
+                        dataType: 'jsonp',
+                        success: function(data2) {
+                            const pageviews = data2.pageviews || 0;
+                            const visitorCountText = document.getElementById('visitorCountText');
+                            if (visitorCountText) {
+                                visitorCountText.textContent = pageviews.toLocaleString() + ' visits this month';
+                            }
+                            analyticsData = data2;
+                            updateStatsView();
+                        },
+                        error: function() {
+                            const visitorCountText = document.getElementById('visitorCountText');
+                            if (visitorCountText) {
+                                visitorCountText.textContent = 'Stats unavailable';
+                            }
+                        }
+                    });
                 }
             });
         }
