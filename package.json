@@ -2,7 +2,7 @@
   "name": "coreus",
   "version": "1.0.0",
   "description": "A simple Node server for index.html",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
