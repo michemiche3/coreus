@@ -12,7 +12,7 @@
 |-----------|-------|
 | **License** | AGPL v3.0 |
 | **Author** | n00dle (noodlelover1) |
-| **Live Demo** | https://noodlelover1.github.io/coreus/ |
+| **Live Demo** | https://n00dle.is-a.dev/coreus/ |
 | **Repository** | https://github.com/noodlelover1/coreus |
 
 ---
@@ -90,7 +90,7 @@ The server is optional - the app works fully client-side.
 | Backend | Description | Games Count | Mobile Friendly |
 |---------|-------------|-------------|-----------------|
 | **VRTX** | Local games stored in `assets/games/` | 113+ | Yes |
-| **Selenite** | External API (`api.selenite.cc`) | 850+ | Partial |
+| **Selenite** | External | 500+ | Partial |
 
 **Games Data Structure** (`assets/games.json`):
 ```json
@@ -573,12 +573,10 @@ From the README:
 
 ## Resources
 
-- [Live Demo](https://noodlelover1.github.io/coreus/)
+- [Live Demo](https://n00dle.is-a.dev/coreus/)
 - [GitHub Repository](https://github.com/noodlelover1/coreus)
 - [Puter.js Documentation](https://docs.puter.com/)
 - [Font Awesome Icons](https://fontawesome.com/icons)
 - [Marked.js Documentation](https://marked.js.org/)
 
 ---
-
-*Last updated: 2024 | Coreus v1.0*
