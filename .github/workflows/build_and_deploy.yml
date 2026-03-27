@@ -1,4 +1,5 @@
-# Build onefile, then deploy static content to GitHub Pages
+# Build and Deploy to Pages
+
 name: Build and Deploy to Pages
 
 on:
@@ -38,7 +39,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
           # Get the parent commit message using the SHA from github context
-          PREV_MSG=$(git log -1 --format="%s" ${{ github.sha }}^ 2>/dev/null) || PREV_MSG="initial"
+          PREV_MSG=$(git log -1 --format="%s" ${{ github.event.before }} 2>/dev/null) || PREV_MSG="initial"
           
           git add coreus-onefile.html
           git diff --cached --quiet || git commit -m "chore: build onefile [$PREV_MSG]"
