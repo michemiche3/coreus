@@ -22,6 +22,7 @@
 - 🎮 500+ GAMES !!!
 - 🌐 Ultraviolet proxy
 - 💬 Live chatroom
+- 🍿 Anime streaming
 - 🏆 Achievements system
 - 🤖 AI chatbot with 4 AI models
 - 🥷 Tab cloaking (disguise + about:blank)
