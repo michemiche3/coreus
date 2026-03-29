@@ -99,6 +99,98 @@
             transform: translate(-50%, -50%);
             box-shadow: 0 0 8px rgba(0,0,0,0.3);
         }
+        
+        .cursor-dot.rainbow {
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            border: none;
+            box-shadow: 0 0 15px rgba(255,0,0,0.7), 0 0 30px rgba(255,127,0,0.5), 0 0 45px rgba(255,255,0,0.3);
+            animation: rainbowPulse 1s linear infinite;
+        }
+        
+        @keyframes rainbowPulse {
+            0% { box-shadow: 0 0 15px #ff0000, 0 0 30px #ff7f00, 0 0 45px #ffff00; }
+            16% { box-shadow: 0 0 15px #ff7f00, 0 0 30px #ffff00, 0 0 45px #00ff00; }
+            33% { box-shadow: 0 0 15px #ffff00, 0 0 30px #00ff00, 0 0 45px #0000ff; }
+            50% { box-shadow: 0 0 15px #00ff00, 0 0 30px #0000ff, 0 0 45px #4b0082; }
+            66% { box-shadow: 0 0 15px #0000ff, 0 0 30px #4b0082, 0 0 45px #9400d3; }
+            83% { box-shadow: 0 0 15px #4b0082, 0 0 30px #9400d3, 0 0 45px #ff0000; }
+            100% { box-shadow: 0 0 15px #ff0000, 0 0 30px #ff7f00, 0 0 45px #ffff00; }
+        }
+        
+        .cursor-dot.neon {
+            background: #0ff;
+            border: 2px solid #0ff;
+            box-shadow: 0 0 15px #0ff, 0 0 30px #0ff;
+        }
+        
+        .cursor-dot.fire {
+            background: linear-gradient(45deg, #ff4500, #ff8c00);
+            border: none;
+            box-shadow: 0 0 10px #ff4500;
+        }
+        
+        .cursor-dot.ice {
+            background: linear-gradient(45deg, #00ffff, #0099ff);
+            border: none;
+            box-shadow: 0 0 10px #00ffff;
+        }
+        
+        .cursor-dot.gold {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 10px #ffd700;
+        }
+        
+        .cursor-dot.geek {
+            width: 16px;
+            height: 16px;
+            background: #00ff00;
+            border: 2px solid #00ff00;
+            border-radius: 3px;
+            box-shadow: 0 0 8px #00ff00;
+        }
+        
+        .cursor-dot.pink {
+            background: #ff69b4;
+            border: 2px solid #ff1493;
+            box-shadow: 0 0 10px #ff69b4;
+        }
+        
+        .cursor-dot.dark {
+            background: #333;
+            border: 2px solid #666;
+        }
+        
+        .cursor-dot.red {
+            background: #ff3333;
+            border: 2px solid #cc0000;
+            box-shadow: 0 0 10px #ff3333;
+        }
+        
+        .cursor-dot.purple {
+            background: #9933ff;
+            border: 2px solid #6600cc;
+            box-shadow: 0 0 10px #9933ff;
+        }
+        
+        .cursor-dot.matrix {
+            width: 16px;
+            height: 16px;
+            background: #003300;
+            border: 2px solid #00ff00;
+            border-radius: 3px;
+            box-shadow: 0 0 8px #00ff00;
+        }
+        
+        .cursor-option:hover {
+            border-color: #7c4dff !important;
+            transform: scale(1.05);
+        }
+        
+        .cursor-option.selected {
+            border-color: #7c4dff;
+            background: #252525;
+        }
 
         /* Click Ripple Effect */
         .click-ripple {
@@ -955,6 +1047,60 @@
                     <h4 style="color: #fff; margin-bottom: 0.5rem; font-weight: 600;">about:blank cloaking</h4>
                     <div style="display:flex; gap:10px; align-items:center;">
                         <button id="aboutBlankBtn" title="Open the current page inside an iframe on an about:blank tab" class="proxy-btn" style="padding: 0.7rem 2.2rem; background: #fff; color: #000; font-weight: 600; font-size: 1.08rem; border: none; border-radius: 8px; box-shadow: 0 2px 8px rgba(255,255,255,0.1); transition: all 0.2s;">Open in about:blank</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 700; border-bottom: 2px solid #333; padding-bottom: 0.5rem;">Cursor Skin</h3>
+                <div id="cursorOptions" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px;">
+                    <div onclick="setCursor('default')" class="cursor-option" data-cursor="default" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: white; border: 2px solid black; border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Default</span>
+                    </div>
+                    <div onclick="setCursor('rainbow')" class="cursor-option" data-cursor="rainbow" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: linear-gradient(45deg, red, orange, yellow, green, blue, purple); border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Rainbow</span>
+                    </div>
+                    <div onclick="setCursor('neon')" class="cursor-option" data-cursor="neon" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: #0ff; border: 2px solid #0ff; border-radius: 50%; box-shadow: 0 0 10px #0ff; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Neon</span>
+                    </div>
+                    <div onclick="setCursor('fire')" class="cursor-option" data-cursor="fire" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: linear-gradient(45deg, #ff4500, #ff8c00); border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Fire</span>
+                    </div>
+                    <div onclick="setCursor('ice')" class="cursor-option" data-cursor="ice" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: linear-gradient(45deg, #00ffff, #0099ff); border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Ice</span>
+                    </div>
+                    <div onclick="setCursor('gold')" class="cursor-option" data-cursor="gold" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: linear-gradient(45deg, #ffd700, #ffaa00); border: 2px solid #ffd700; border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Gold</span>
+                    </div>
+                    <div onclick="setCursor('geek')" class="cursor-option" data-cursor="geek" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: #00ff00; border: 2px solid #00ff00; border-radius: 3px; margin: 0 auto 8px; box-shadow: 0 0 5px #00ff00;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Geek</span>
+                    </div>
+                    <div onclick="setCursor('pink')" class="cursor-option" data-cursor="pink" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: #ff69b4; border: 2px solid #ff1493; border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Pink</span>
+                    </div>
+                    <div onclick="setCursor('dark')" class="cursor-option" data-cursor="dark" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: #333; border: 2px solid #666; border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Dark</span>
+                    </div>
+                    <div onclick="setCursor('red')" class="cursor-option" data-cursor="red" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: #ff3333; border: 2px solid #cc0000; border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Red</span>
+                    </div>
+                    <div onclick="setCursor('purple')" class="cursor-option" data-cursor="purple" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: #9933ff; border: 2px solid #6600cc; border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Purple</span>
+                    </div>
+                    <div onclick="setCursor('matrix')" class="cursor-option" data-cursor="matrix" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: #003300; border: 2px solid #00ff00; border-radius: 3px; margin: 0 auto 8px; box-shadow: 0 0 3px #00ff00;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Matrix</span>
                     </div>
                 </div>
             </div>
@@ -3530,6 +3676,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             hideAllViews();
             document.getElementById('settingsView').style.display = 'block';
             loadCurrentSettings();
+            loadCursorSetting();
             previousView = 'settings';
         }
 
@@ -4041,6 +4188,12 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                 cursor.className = 'cursor-dot';
                 document.body.appendChild(cursor);
                 
+                // Load saved cursor style
+                const savedCursor = localStorage.getItem('coreus_cursor_style') || 'default';
+                if (savedCursor !== 'default') {
+                    cursor.classList.add(savedCursor);
+                }
+                
                 document.addEventListener('mousemove', (e) => {
                     cursor.style.left = e.clientX + 'px';
                     cursor.style.top = e.clientY + 'px';
@@ -4093,6 +4246,28 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             document.getElementById('urlInput').focus();
             ensureNavbarProfileButton();
         });
+
+        function setCursor(style) {
+            localStorage.setItem('coreus_cursor_style', style);
+            
+            const cursor = document.querySelector('.cursor-dot');
+            if (cursor) {
+                cursor.className = 'cursor-dot';
+                if (style !== 'default') {
+                    cursor.classList.add(style);
+                }
+            }
+            
+            document.querySelectorAll('.cursor-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.querySelector(`.cursor-option[data-cursor="${style}"]`)?.classList.add('selected');
+        }
+
+        function loadCursorSetting() {
+            const savedCursor = localStorage.getItem('coreus_cursor_style') || 'default';
+            setCursor(savedCursor);
+        }
 
         function formatTime(seconds) {
             const hrs = Math.floor(seconds / 3600);
