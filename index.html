@@ -663,7 +663,9 @@
     <div id="gamePopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); background-image: radial-gradient(circle, #333 1px, transparent 1px); background-size: 40px 40px; z-index: 3000; overflow-y: auto;">
         <div id="gameContainer" style="width: 80%; margin: 20px auto; background: #111; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 2px solid #333; padding-bottom: 80px;">
             <div id="gameHeader" style="background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;">
-                <span id="gameUrlDisplay" style="color: #fff; font-size: 1.1rem; font-weight: 600;"></span>
+                <div style="display: flex; align-items: center; flex-shrink: 1; overflow: hidden;">
+                    <span id="gameUrlDisplay" style="color: #fff; font-size: 1.1rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span><span id="hackedIndicator" style="color: #ff4444; font-size: 0.85rem; font-weight: 600; display: none; margin-left: 8px; flex-shrink: 0;">[HACKED]</span>
+                </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <div id="fpsCounter" style="background: rgba(0,0,0,0.5); padding: 6px 12px; border-radius: 20px; color: #4CAF50; font-size: 0.85rem; font-family: monospace; font-weight: 600;">0 FPS</div>
                     <button id="fullscreenBtn" onclick="toggleGameFullscreen()" style="background: rgba(255,255,255,0.1); border: none; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: all 0.3s;"><i class="fas fa-expand"></i></button>
@@ -677,6 +679,45 @@
                     <div class="loading-text">Loading content...</div>
                     <div id="currentLoadUrl" style="margin-top: 10px; font-size: 0.85rem; color: var(--secondary-text); word-break: break-all; max-width: 400px;"></div>
                 </div>
+            </div>
+            <div id="gameHackSection" style="display: none; padding: 20px; background: linear-gradient(180deg, #1a1a1a 0%, #252525 100%); border-top: 1px solid #444; border-bottom: 1px solid #444;">
+                <div style="display: flex; align-items: center; margin-bottom: 18px;">
+                    <div style="background: linear-gradient(135deg, #ff6b35, #ff9a44); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                        <i class="fas fa-hack" style="color: #fff; font-size: 1rem;"></i>
+                    </div>
+                    <h3 style="color: #fff; margin: 0; font-size: 1.15rem; font-weight: 600;">Game Hacks</h3>
+                    <span id="hackGameBadge" style="background: #ff6b35; color: #fff; font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; margin-left: 10px; font-weight: 600;"></span>
+                </div>
+                <div id="driftBossHacks" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px; background: #111; border: 1px solid #333; border-radius: 12px; padding: 15px;">
+                        <div style="color: #ff6b35; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center;">
+                            <i class="fas fa-coins" style="margin-right: 8px;"></i> Coins
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="number" id="hackCoinsInput" placeholder="Amount" style="flex: 1; padding: 12px 15px; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none; transition: all 0.2s;" onfocus="this.style.borderColor='#ff6b35'" onblur="this.style.borderColor='#333'">
+                            <button onclick="applyDriftBossCoinsHack()" style="background: linear-gradient(135deg, #ff6b35, #ff9a44); border: none; color: #fff; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; white-space: nowrap;" onmouseenter="this.style.transform='scale(1.02)'" onmouseleave="this.style.transform='scale(1)'">Apply</button>
+                        </div>
+                    </div>
+                    <div style="flex: 1; min-width: 200px; background: #111; border: 1px solid #333; border-radius: 12px; padding: 15px;">
+                        <div style="color: #7c4dff; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center;">
+                            <i class="fas fa-trophy" style="margin-right: 8px;"></i> Score
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="number" id="hackScoreInput" placeholder="Amount" style="flex: 1; padding: 12px 15px; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none; transition: all 0.2s;" onfocus="this.style.borderColor='#7c4dff'" onblur="this.style.borderColor='#333'">
+                            <button onclick="applyDriftBossScoreHack()" style="background: linear-gradient(135deg, #7c4dff, #e040fb); border: none; color: #fff; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; white-space: nowrap;" onmouseenter="this.style.transform='scale(1.02)'" onmouseleave="this.style.transform='scale(1)'">Apply</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="drivenWildHacks" style="display: none; background: #111; border: 1px solid #333; border-radius: 12px; padding: 15px;">
+                    <div style="color: #00e5ff; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center;">
+                        <i class="fas fa-road" style="margin-right: 8px;"></i> Best Distance
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <input type="number" id="hackDistanceInput" placeholder="Distance" style="flex: 1; min-width: 120px; padding: 12px 15px; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none; transition: all 0.2s;" onfocus="this.style.borderColor='#00e5ff'" onblur="this.style.borderColor='#333'">
+                        <button onclick="applyDrivenWildHack()" style="background: linear-gradient(135deg, #00e5ff, #00b8d4); border: none; color: #000; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; white-space: nowrap;" onmouseenter="this.style.transform='scale(1.02)'" onmouseleave="this.style.transform='scale(1)'">Apply</button>
+                    </div>
+                </div>
+                <p id="hackStatus" style="color: #666; font-size: 0.85rem; margin-top: 12px; text-align: center;"></p>
             </div>
             <div style="padding: 20px;">
                 <h3 style="color: #fff; margin-bottom: 15px; font-size: 1.2rem;">More Games</h3>
@@ -2099,12 +2140,17 @@
 
         function showGamePopup(gamePath, popupTitle, isSelenite = false) {
             previousView = 'games';
+            currentGamePath = gamePath;
 
             document.getElementById('gamesView').style.display = 'none';
 
             document.getElementById('gamePopup').style.display = 'block';
 
             document.getElementById('gameUrlDisplay').textContent = popupTitle || gamePath;
+            
+            showGameHacks(gamePath);
+            
+            setTimeout(() => reapplyHacks(), 3000);
 
             trackGamePlay(popupTitle);
 
@@ -2169,6 +2215,279 @@
         }
 
         let previousView = 'main';
+        let currentGamePath = '';
+
+        function markGameAsHacked(gamePath) {
+            const gameKey = gamePath.split('/').pop() || gamePath;
+            const hackedGames = JSON.parse(localStorage.getItem('coreus_hacked_games') || '[]');
+            
+            if (!hackedGames.includes(gameKey)) {
+                hackedGames.push(gameKey);
+                localStorage.setItem('coreus_hacked_games', JSON.stringify(hackedGames));
+            }
+            
+            document.getElementById('hackedIndicator').style.display = 'inline';
+        }
+
+        function reapplyHacks() {
+            const gameKey = currentGamePath.split('/').pop() || currentGamePath;
+            const hackedGames = JSON.parse(localStorage.getItem('coreus_hacked_games') || '[]');
+            const isHacked = hackedGames.includes(gameKey);
+            
+            if (!isHacked) return;
+            
+            const hackData = JSON.parse(localStorage.getItem('coreus_hack_data') || '{}');
+            const savedHack = hackData[gameKey];
+            
+            if (!savedHack) return;
+            
+            try {
+                const gameIframe = document.getElementById('gameIframe');
+                const iframeDoc = gameIframe.contentDocument || gameIframe.contentWindow.document;
+                const localStorage = iframeDoc.defaultView.localStorage;
+                
+                const saveKeys = ['btcClickerSave', 'btcclicker', 'bitcoinClickerSave', 'gameSave'];
+                let usedKey = '';
+                
+                for (let key of saveKeys) {
+                    const savedData = localStorage.getItem(key);
+                    if (savedData) {
+                        usedKey = key;
+                        break;
+                    }
+                }
+                
+                if (usedKey) {
+                    localStorage.setItem(usedKey, JSON.stringify(savedHack.value));
+                    console.log('Hack re-applied for', gameKey);
+                }
+            } catch (e) {
+                console.error('Failed to reapply hack:', e);
+            }
+        }
+
+        function showGameHacks(gamePath) {
+            const hackSection = document.getElementById('gameHackSection');
+            const driftBossHacks = document.getElementById('driftBossHacks');
+            const drivenWildHacks = document.getElementById('drivenWildHacks');
+            const hackBadge = document.getElementById('hackGameBadge');
+            
+            currentGamePath = gamePath;
+            
+            const hackedGames = JSON.parse(localStorage.getItem('coreus_hacked_games') || '[]');
+            const gameKey = gamePath.split('/').pop() || gamePath;
+            const isHacked = hackedGames.includes(gameKey) || hackedGames.some(g => gamePath.includes(g));
+            
+            document.getElementById('hackedIndicator').style.display = isHacked ? 'inline' : 'none';
+            
+const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-boss') || gamePath.includes('drift_boss');
+            const isDrivenWild = gamePath.includes('drivenwild') || gamePath.includes('driven-wild') || gamePath.includes('driven_wild') || gamePath.includes('driven');
+            
+            if (isDriftBoss) {
+                hackSection.style.display = 'block';
+                driftBossHacks.style.display = 'flex';
+                drivenWildHacks.style.display = 'none';
+                hackBadge.textContent = 'DRIFT BOSS';
+                hackBadge.style.background = '#ff6b35';
+                hackBadge.style.color = '#fff';
+            } else if (isDrivenWild) {
+                hackSection.style.display = 'block';
+                driftBossHacks.style.display = 'none';
+                drivenWildHacks.style.display = 'block';
+                hackBadge.textContent = 'DRIVEN WILD';
+                hackBadge.style.background = '#00e5ff';
+                hackBadge.style.color = '#000';
+            } else {
+                hackSection.style.display = 'none';
+            }
+        }
+
+        function applyDriftBossCoinsHack() {
+            const coins = document.getElementById('hackCoinsInput').value;
+            const status = document.getElementById('hackStatus');
+            
+            if (!coins || isNaN(coins) || parseInt(coins) < 0) {
+                status.textContent = 'Please enter a valid number of coins.';
+                status.style.color = '#ff4444';
+                return;
+            }
+            
+            try {
+                const gameIframe = document.getElementById('gameIframe');
+                const iframeDoc = gameIframe.contentDocument || gameIframe.contentWindow.document;
+                const localStorage = iframeDoc.defaultView.localStorage;
+                
+                let gameData = {};
+                const savedData = localStorage.getItem('mjs-drift-boss-game-v1.0.2-dailyreward');
+                
+                if (savedData) {
+                    gameData = JSON.parse(savedData);
+                }
+                
+                gameData.collectedCoin = parseInt(coins);
+                localStorage.setItem('mjs-drift-boss-game-v1.0.2-dailyreward', JSON.stringify(gameData));
+                
+                markGameAsHacked(currentGamePath);
+                
+                status.textContent = `Coins hack applied! Coins set to ${coins}. Refresh the game to see changes.`;
+                status.style.color = '#4CAF50';
+            } catch (e) {
+                status.textContent = 'Error: Could not access game data. Make sure the game is loaded.';
+                status.style.color = '#ff4444';
+                console.error('Hack error:', e);
+            }
+        }
+
+        function applyDriftBossScoreHack() {
+            const score = document.getElementById('hackScoreInput').value;
+            const status = document.getElementById('hackStatus');
+            
+            if (!score || isNaN(score) || parseInt(score) < 0) {
+                status.textContent = 'Please enter a valid score.';
+                status.style.color = '#ff4444';
+                return;
+            }
+            
+            try {
+                const gameIframe = document.getElementById('gameIframe');
+                const iframeDoc = gameIframe.contentDocument || gameIframe.contentWindow.document;
+                const localStorage = iframeDoc.defaultView.localStorage;
+                
+                let gameData = {};
+                const savedData = localStorage.getItem('mjs-drift-boss-game-v1.0.2-dailyreward');
+                
+                if (savedData) {
+                    gameData = JSON.parse(savedData);
+                }
+                
+                gameData.score = parseInt(score);
+                localStorage.setItem('mjs-drift-boss-game-v1.0.2-dailyreward', JSON.stringify(gameData));
+                
+                markGameAsHacked(currentGamePath);
+                
+                status.textContent = `Score hack applied! Score set to ${score}. Refresh the game to see changes.`;
+                status.style.color = '#4CAF50';
+            } catch (e) {
+                status.textContent = 'Error: Could not access game data. Make sure the game is loaded.';
+                status.style.color = '#ff4444';
+                console.error('Hack error:', e);
+            }
+        }
+
+        function applyDrivenWildHack() {
+            const distance = document.getElementById('hackDistanceInput').value;
+            const status = document.getElementById('hackStatus');
+            
+            if (!distance || isNaN(distance) || parseInt(distance) < 0) {
+                status.textContent = 'Please enter a valid distance.';
+                status.style.color = '#ff4444';
+                return;
+            }
+            
+            try {
+                const gameIframe = document.getElementById('gameIframe');
+                const iframeDoc = gameIframe.contentDocument || gameIframe.contentWindow.document;
+                const localStorage = iframeDoc.defaultView.localStorage;
+                
+                let gameData = {};
+                const savedData = localStorage.getItem('DrivenWild');
+                
+                if (savedData) {
+                    gameData = JSON.parse(savedData);
+                }
+                
+                gameData.bestDistance = parseInt(distance);
+                localStorage.setItem('DrivenWild', JSON.stringify(gameData));
+                
+                markGameAsHacked(currentGamePath);
+                
+                status.textContent = `Best Distance hack applied! Distance set to ${distance}. Refresh the game to see changes.`;
+                status.style.color = '#4CAF50';
+            } catch (e) {
+                status.textContent = 'Error: Could not access game data. Make sure the game is loaded.';
+                status.style.color = '#ff4444';
+                console.error('Hack error:', e);
+            }
+        }
+
+        function applyBitcoinClickerHack(type) {
+            let value;
+            let status = document.getElementById('hackStatus');
+            
+            if (type === 'btc') {
+                value = document.getElementById('hackBtcInput').value;
+            } else if (type === 'btcPerClick') {
+                value = document.getElementById('hackBtcPerClickInput').value;
+            } else if (type === 'btcPerSec') {
+                value = document.getElementById('hackBtcPerSecInput').value;
+            } else if (type === 'prestige') {
+                value = document.getElementById('hackPrestigeInput').value;
+            }
+            
+            if (!value || isNaN(value) || parseInt(value) < 0) {
+                status.textContent = 'Please enter a valid number.';
+                status.style.color = '#ff4444';
+                return;
+            }
+            
+            try {
+                const gameIframe = document.getElementById('gameIframe');
+                let localStorage;
+                
+                try {
+                    const iframeDoc = gameIframe.contentDocument || gameIframe.contentWindow.document;
+                    localStorage = iframeDoc.defaultView.localStorage;
+                } catch (e) {
+                    localStorage = gameIframe.contentWindow.localStorage;
+                }
+                
+                let gameData = {};
+                const saveKeys = ['btcClickerSave', 'btcclicker', 'bitcoinClickerSave', 'gameSave'];
+                let usedKey = '';
+                
+                for (let key of saveKeys) {
+                    const savedData = localStorage.getItem(key);
+                    if (savedData) {
+                        try {
+                            gameData = JSON.parse(savedData);
+                            usedKey = key;
+                            break;
+                        } catch (e) {}
+                    }
+                }
+                
+                if (type === 'btc') {
+                    gameData.btc = parseInt(value);
+                    status.textContent = `BTC set to ${value}. Refresh game to see changes.`;
+                } else if (type === 'btcPerClick') {
+                    gameData.btcPerClick = parseInt(value);
+                    status.textContent = `BTC/Click set to ${value}. Refresh game to see changes.`;
+                } else if (type === 'btcPerSec') {
+                    gameData.btcPerSec = parseInt(value);
+                    status.textContent = `BTC/Second set to ${value}. Refresh game to see changes.`;
+                } else if (type === 'prestige') {
+                    gameData.prestigeCount = parseInt(value);
+                    gameData.prestigeMultiplier = 1 + (parseInt(value) * 0.1);
+                    status.textContent = `Prestige set to ${value}. Refresh game to see changes.`;
+                }
+                
+                localStorage.setItem(usedKey || 'btcClickerSave', JSON.stringify(gameData));
+                
+                markGameAsHacked(currentGamePath);
+                
+                const gameKey = currentGamePath.split('/').pop() || currentGamePath;
+                const hackData = JSON.parse(localStorage.getItem('coreus_hack_data') || '{}');
+                hackData[gameKey] = { type: 'bitcoinClicker', value: gameData };
+                localStorage.setItem('coreus_hack_data', JSON.stringify(hackData));
+                
+                status.textContent = `Hack applied! Refresh game to see changes.`;
+                status.style.color = '#4CAF50';
+            } catch (e) {
+                status.textContent = 'Error: ' + e.message + '. Make sure the game is loaded.';
+                status.style.color = '#ff4444';
+                console.error('Hack error:', e);
+            }
+        }
 
         function closeGamePopup() {
             stopFpsCounter();
@@ -2874,6 +3193,9 @@
 
                 const imageSrc = isSelenite ? (seleniteConfig.baseUrl + imagePath) : ('./assets/' + imagePath);
                 const isFavorite = favorites.includes(title);
+                const isHackable = gamePath && (gamePath.includes('driftboss') || gamePath.includes('drift-boss') || gamePath.includes('drift_boss') || gamePath.includes('drivenwild') || gamePath.includes('driven-wild') || gamePath.includes('driven_wild'));
+                
+                const hackBadge = isHackable ? `<div style="position: absolute; bottom: 5px; left: 5px; background: linear-gradient(135deg, #ff6b35, #ff9a44); padding: 3px 8px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px;"><i class="fas fa-hack" style="font-size: 0.6rem;"></i> HACKABLE</div>` : '';
 
                 gameCard.innerHTML = `
                     <div style="position: relative; width: 150px; height: 150px;">
@@ -2884,6 +3206,7 @@
                         <button class="favorite-btn" data-title="${title}" style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: ${isFavorite ? '#FFD700' : '#666'}; transition: transform 0.2s;">
                             ${isFavorite ? '★' : '☆'}
                         </button>
+                        ${hackBadge}
                     </div>
                     <span style="color: var(--primary-text); font-size: 1.2rem; margin-top: 10px;">${title}</span>
                 `;
