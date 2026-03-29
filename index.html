@@ -4041,22 +4041,10 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                 cursor.className = 'cursor-dot';
                 document.body.appendChild(cursor);
                 
-                let mouseX = 0, mouseY = 0;
-                let currentX = 0, currentY = 0;
-                
                 document.addEventListener('mousemove', (e) => {
-                    mouseX = e.clientX;
-                    mouseY = e.clientY;
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
                 });
-                
-                function animateCursor() {
-                    currentX += (mouseX - currentX) * 0.3;
-                    currentY += (mouseY - currentY) * 0.3;
-                    cursor.style.left = currentX + 'px';
-                    cursor.style.top = currentY + 'px';
-                    requestAnimationFrame(animateCursor);
-                }
-                animateCursor();
                 
                 document.addEventListener('mouseleave', () => {
                     cursor.style.opacity = '0';
@@ -4080,13 +4068,20 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                 });
             }
             
+            let touchTriggered = false;
+            
             // Mouse click
             document.addEventListener('mousedown', (e) => {
+                if (touchTriggered) {
+                    touchTriggered = false;
+                    return;
+                }
                 createRipple(e.clientX, e.clientY);
             });
             
             // Touch tap
             document.addEventListener('touchstart', (e) => {
+                touchTriggered = true;
                 if (e.touches.length > 0) {
                     const touch = e.touches[0];
                     createRipple(touch.clientX, touch.clientY);
