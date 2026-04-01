@@ -195,6 +195,167 @@
             background: #252525;
         }
 
+        /* Games UI Enhancements */
+        .featured-slide {
+            min-width: 100%;
+            height: 430px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .featured-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+        }
+
+        .featured-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        #prevFeatured, #nextFeatured {
+            width: 50px !important;
+            height: 50px !important;
+            font-size: 1.8rem !important;
+            padding: 0 !important;
+            line-height: 1 !important;
+            min-width: 50px !important;
+            min-height: 50px !important;
+            border-radius: 50% !important;
+            background: rgba(255,255,255,0.25) !important;
+            color: #fff !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            border: 2px solid rgba(255,255,255,0.6) !important;
+        }
+
+        #prevFeatured:hover, #nextFeatured:hover {
+            background: rgba(255,255,255,0.45) !important;
+        }
+
+        .featured-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .featured-play-btn {
+            background: #ffffff;
+            color: #000000;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 15px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .featured-play-btn:hover {
+            background: #f2f2f2;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        }
+
+        .category-btn:hover {
+            background: #ffffff !important;
+            color: #000 !important;
+            border-color: #ffffff !important;
+            transform: translateY(-2px);
+        }
+
+        .category-btn.active {
+            background: #ffffff !important;
+            color: #000 !important;
+            border-color: #ffffff !important;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-color: var(--accent-color);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .game-card-content {
+            padding: 15px;
+        }
+
+        .game-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-text);
+            margin-bottom: 5px;
+        }
+
+        .game-card-category {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+            background: var(--secondary-bg);
+            padding: 4px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .game-card-favorite {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .game-card-favorite:hover {
+            background: var(--accent-color);
+        }
+
+        .game-card-favorite.active {
+            background: #ff6b6b;
+        }
+
         /* Click Ripple Effect */
         .click-ripple {
             position: fixed;
@@ -1125,10 +1286,42 @@
         <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
             <h2 class="title" style="font-size: 4rem; margin-bottom: 0; flex-grow: 1; text-align: center;">Coreus games</h2>
         </div>
+
+        <!-- Featured Games Carousel -->
+        <div id="featuredGames" style="max-width: 1200px; margin: 0 auto 50px; position: relative; overflow: hidden; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+            <div id="featuredCarousel" style="display: flex; transition: transform 0.5s ease; width: 100%;">
+                <!-- Featured games will be inserted here -->
+            </div>
+            <button id="prevFeatured" onclick="goToFeaturedSlide(currentFeaturedIndex - 1)" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); border: none; color: white; font-size: 2rem; padding: 10px; border-radius: 50%; cursor: pointer; z-index: 10;">‹</button>
+            <button id="nextFeatured" onclick="goToFeaturedSlide(currentFeaturedIndex + 1)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); border: none; color: white; font-size: 2rem; padding: 10px; border-radius: 50%; cursor: pointer; z-index: 10;">›</button>
+            <div id="featuredIndicators" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px;"></div>
+        </div>
+
+        <!-- Categories -->
+        <div id="categoriesSection" style="max-width: 1200px; margin: 0 auto 30px; text-align: center;">
+            <div id="categoryButtons" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                <button class="category-btn active" data-category="all" onclick="filterByCategory('all')" style="padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">All Games</button>
+                <button class="category-btn" data-category="Action" onclick="filterByCategory('Action')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Action</button>
+                <button class="category-btn" data-category="Puzzle" onclick="filterByCategory('Puzzle')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Puzzle</button>
+                <button class="category-btn" data-category="Racing" onclick="filterByCategory('Racing')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Racing</button>
+                <button class="category-btn" data-category="Idle" onclick="filterByCategory('Idle')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Idle</button>
+                <button class="category-btn" data-category="Sports" onclick="filterByCategory('Sports')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Sports</button>
+                <button class="category-btn" data-category="Strategy" onclick="filterByCategory('Strategy')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Strategy</button>
+                <button class="category-btn" data-category="Adventure" onclick="filterByCategory('Adventure')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Adventure</button>
+                <button class="category-btn" data-category="Rhythm" onclick="filterByCategory('Rhythm')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Rhythm</button>
+                <button class="category-btn" data-category="Simulation" onclick="filterByCategory('Simulation')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Simulation</button>
+                <button class="category-btn" data-category="Casual" onclick="filterByCategory('Casual')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Casual</button>
+                <button class="category-btn" data-category="Social" onclick="filterByCategory('Social')" style="padding: 10px 20px; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s;">Social</button>
+            </div>
+        </div>
+
+        <!-- Search -->
         <div style="display: flex; justify-content: center; margin-bottom: 30px;">
             <input type="text" id="gamesSearchInput" placeholder="Search games..." style="width: 100%; max-width: 500px; padding: 12px 20px; font-size: 1rem; background-color: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 25px; color: var(--primary-text); outline: none; transition: all 0.3s ease;" />
         </div>
-        <div id="gamesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; padding: 10px;"></div>
+
+        <!-- Games Grid -->
+        <div id="gamesGrid" style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; padding: 10px;"></div>
 
     </div>
 
@@ -1743,6 +1936,9 @@
         };
         
         let gameBackend = localStorage.getItem('gameBackend') || 'https://noodlelover1.github.io/coreus-assets/';
+        let currentCategory = 'all';
+        let featuredGames = [];
+        let currentFeaturedIndex = 0;
         let toolsBackend = localStorage.getItem('toolsBackend') || 'auto';
 
         let cloakingOption = localStorage.getItem('cloakingOption') || 'No';
@@ -3306,7 +3502,8 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                     games = seleniteData.map(game => ({
                         title: game.name,
                         image: seleniteConfig.gameFolderBase + '/' + game.directory + '/' + game.image,
-                        gamePath: seleniteConfig.gameFolderBase + '/' + game.directory + '/index.html'
+                        gamePath: seleniteConfig.gameFolderBase + '/' + game.directory + '/index.html',
+                        category: game.category || 'Casual'
                     }));
                     console.log('Selenite Games loaded:', games.length);
                 } catch (error) {
@@ -3315,7 +3512,6 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                     return;
                 }
             } else {
-
                 try {
                     const response = await fetch('https://noodlelover1.github.io/coreus-assets/games.json');
                     games = await response.json();
@@ -3327,8 +3523,25 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                 }
             }
 
+            // Selenite backend has no categories in games payload
+            if (isSelenite) {
+                currentCategory = 'all';
+                document.getElementById('categoriesSection').style.display = 'none';
+            } else {
+                document.getElementById('categoriesSection').style.display = 'block';
+            }
+
+            // Set featured games (first 5 popular ones)
+            featuredGames = games.slice(0, 5);
+
+            // Load featured carousel
+            loadFeaturedCarousel();
+
+            // Filter by category
+            let filteredGames = currentCategory === 'all' ? games : games.filter(game => (game.category || game.tags || '').toLowerCase().includes(currentCategory.toLowerCase()));
+
             const favorites = getGameFavorites();
-            games.sort((a, b) => {
+            filteredGames.sort((a, b) => {
                 const titleA = a.title || a.name || '';
                 const titleB = b.title || b.name || '';
                 const aFav = favorites.includes(titleA);
@@ -3341,32 +3554,23 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             const gamesGrid = document.getElementById('gamesGrid');
             gamesGrid.innerHTML = '';
 
-            if (favorites.length > 0) {
+            if (favorites.length > 0 && currentCategory === 'all') {
                 const favHeader = document.createElement('div');
                 favHeader.style.cssText = 'grid-column: 1 / -1; color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; padding: 10px 0; border-bottom: 2px solid #333;';
                 favHeader.textContent = '★ Favorites';
                 gamesGrid.appendChild(favHeader);
             }
 
-            games.forEach(game => {
+            filteredGames.forEach(game => {
                 const title = game.title || game.name || 'Unknown Game';
                 const imagePath = game.image || game.img || '';
                 const gamePath = game.gamePath || game.href || game.path || game.url || '';
+                const category = game.category || 'Casual';
 
                 const gameCard = document.createElement('div');
                 gameCard.className = 'game-card';
                 gameCard.setAttribute('data-game-name', title.toLowerCase());
-                gameCard.style.cssText = `
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    text-align: center;
-                    background: transparent;
-                    border-radius: 10px;
-                    padding: 15px;
-                    cursor: pointer;
-                    transition: transform 0.3s, background 0.3s;
-                `;
+                gameCard.setAttribute('data-category', category.toLowerCase());
 
                 const imageSrc = isSelenite ? (seleniteConfig.baseUrl + imagePath) : ('https://noodlelover1.github.io/coreus-assets/' + imagePath);
                 const isFavorite = favorites.includes(title);
@@ -3375,20 +3579,22 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                 const hackBadge = isHackable ? `<div style="position: absolute; bottom: 5px; left: 5px; background: linear-gradient(135deg, #ff6b35, #ff9a44); padding: 3px 8px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px;"><i class="fas fa-hack" style="font-size: 0.6rem;"></i> HACKABLE</div>` : '';
 
                 gameCard.innerHTML = `
-                    <div style="position: relative; width: 150px; height: 150px;">
+                    <div style="position: relative;">
                         <img src="${imageSrc}"
                              alt="${title}"
-                             style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; border: 1px solid var(--border-color);"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
-                        <button class="favorite-btn" data-title="${title}" style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: ${isFavorite ? '#FFD700' : '#666'}; transition: transform 0.2s;">
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'220\' height=\'150\' viewBox=\'0 0 220 150\'><rect width=\'220\' height=\'150\' fill=\'%23333\'/><text x=\'110\' y=\'80\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
+                        <button class="game-card-favorite ${isFavorite ? 'active' : ''}" data-title="${title}">
                             ${isFavorite ? '★' : '☆'}
                         </button>
                         ${hackBadge}
                     </div>
-                    <span style="color: var(--primary-text); font-size: 1.2rem; margin-top: 10px;">${title}</span>
+                    <div class="game-card-content">
+                        <div class="game-card-title">${title}</div>
+                        <div class="game-card-category">${category}</div>
+                    </div>
                 `;
 
-                const favBtn = gameCard.querySelector('.favorite-btn');
+                const favBtn = gameCard.querySelector('.game-card-favorite');
                 favBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     toggleGameFavorite(title);
@@ -3400,37 +3606,94 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                     }
                 });
 
-                gameCard.addEventListener('mouseenter', () => {
-                    gameCard.style.transform = 'scale(1.05)';
-                });
-
-                gameCard.addEventListener('mouseleave', () => {
-                    gameCard.style.transform = 'scale(1)';
-                });
-
                 gamesGrid.appendChild(gameCard);
             });
 
             const gamesSearchInput = document.getElementById('gamesSearchInput');
             if (gamesSearchInput) {
-                gamesSearchInput.addEventListener('input', function() {
-                    filterGames(this.value);
+                gamesSearchInput.addEventListener('input', (e) => {
+                    filterGameCards(e.target.value);
                 });
             }
         }
 
-        function filterGames(searchTerm) {
+        function filterGameCards(searchTerm) {
             const searchLower = searchTerm.toLowerCase();
             const gameCards = document.querySelectorAll('.game-card');
 
             gameCards.forEach(card => {
                 const gameName = card.getAttribute('data-game-name');
-                if (gameName.includes(searchLower)) {
-                    card.style.display = 'flex';
+                const category = card.getAttribute('data-category') || '';
+                const matchesSearch = gameName.includes(searchLower);
+                const matchesCategory = currentCategory === 'all' || category.includes(currentCategory.toLowerCase());
+
+                if (matchesSearch && matchesCategory) {
+                    card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
                 }
             });
+        }
+
+        function loadFeaturedCarousel() {
+            const carousel = document.getElementById('featuredCarousel');
+            const indicators = document.getElementById('featuredIndicators');
+            carousel.innerHTML = '';
+            indicators.innerHTML = '';
+
+            featuredGames.forEach((game, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'featured-slide';
+                const imageSrc = gameBackend === 'selenite' ? (seleniteConfig.baseUrl + game.image) : ('https://noodlelover1.github.io/coreus-assets/' + game.image);
+                slide.style.backgroundImage = `url('${imageSrc}')`;
+                slide.innerHTML = `
+                    <div class="featured-content">
+                        <div class="featured-title">${game.title || game.name}</div>
+                        <button class="featured-play-btn">Play Now</button>
+                    </div>
+                `;
+                carousel.appendChild(slide);
+
+                const playBtn = slide.querySelector('.featured-play-btn');
+                playBtn.addEventListener('click', () => {
+                    showGamePopup(game.gamePath || game.href, game.title || game.name, gameBackend === 'selenite');
+                });
+
+                const indicator = document.createElement('div');
+                indicator.style.cssText = `width: 12px; height: 12px; border-radius: 50%; background: ${index === 0 ? 'var(--accent-color)' : '#666'}; cursor: pointer; transition: background 0.3s;`;
+                indicator.addEventListener('click', () => goToFeaturedSlide(index));
+                indicators.appendChild(indicator);
+            });
+
+            // Auto-slide every 5 seconds
+            setInterval(() => {
+                currentFeaturedIndex = (currentFeaturedIndex + 1) % featuredGames.length;
+                updateFeaturedCarousel();
+            }, 5000);
+        }
+
+        function updateFeaturedCarousel() {
+            const carousel = document.getElementById('featuredCarousel');
+            const indicators = document.getElementById('featuredIndicators').children;
+            carousel.style.transform = `translateX(-${currentFeaturedIndex * 100}%)`;
+            
+            for (let i = 0; i < indicators.length; i++) {
+                indicators[i].style.background = i === currentFeaturedIndex ? 'var(--accent-color)' : '#666';
+            }
+        }
+
+        function goToFeaturedSlide(index) {
+            currentFeaturedIndex = index;
+            updateFeaturedCarousel();
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            loadGames();
         }
 
         function hideAllViews() {
