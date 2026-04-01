@@ -95,7 +95,7 @@
             border: 2px solid #000;
             border-radius: 50%;
             pointer-events: none;
-            z-index: 99999;
+            z-index: 2147483647;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 8px rgba(0,0,0,0.3);
         }
@@ -171,6 +171,20 @@
             box-shadow: 0 0 8px #00ff00;
         }
         
+        .cursor-option.locked {
+            opacity: 0.45;
+            border-color: #555 !important;
+            cursor: pointer;
+        }
+
+        .cursor-option.locked .lock-label {
+            display: block;
+        }
+
+        .cursor-option.locked span {
+            color: #666 !important;
+        }
+
         .cursor-option:hover {
             border-color: #7c4dff !important;
             transform: scale(1.05);
@@ -628,6 +642,15 @@
         </div>
     </div>
 
+    <div id="cursorLockModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999999; justify-content: center; align-items: center;">
+        <div style="background: #111; border-radius: 18px; padding: 24px; width: 90%; max-width: 420px; border: 1px solid #444;">
+            <h3 style="margin: 0 0 12px; color: #fff; font-size: 1.2rem;">Cursor Locked</h3>
+            <p id="cursorLockText" style="color: #ccc; font-size: 0.95rem; margin-bottom: 20px;">This cursor is locked. Unlock it by achieving the requirements.</p>
+            <button onclick="closeCursorLockModal()" style="width: 100%; padding: 10px 14px; border: none; border-radius: 10px; background: #888; color: #fff; font-weight: 600; cursor: pointer;">Close</button>
+        </div>
+    </div>
+
+
     <div class="bottom-navbar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 4000; border: 1px solid rgba(255,255,255,0.1);">
         <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="location.reload()">
             <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" alt="Home" style="width: 24px; height: 24px;">
@@ -1047,14 +1070,6 @@
                         <div style="width: 20px; height: 20px; background: white; border: 2px solid black; border-radius: 50%; margin: 0 auto 8px;"></div>
                         <span style="color: #888; font-size: 0.75rem;">Default</span>
                     </div>
-                    <div onclick="setCursor('rainbow')" class="cursor-option" data-cursor="rainbow" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
-                        <div style="width: 20px; height: 20px; background: linear-gradient(45deg, red, orange, yellow, green, blue, purple); border-radius: 50%; margin: 0 auto 8px;"></div>
-                        <span style="color: #888; font-size: 0.75rem;">Rainbow</span>
-                    </div>
-                    <div onclick="setCursor('neon')" class="cursor-option" data-cursor="neon" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
-                        <div style="width: 20px; height: 20px; background: #0ff; border: 2px solid #0ff; border-radius: 50%; box-shadow: 0 0 10px #0ff; margin: 0 auto 8px;"></div>
-                        <span style="color: #888; font-size: 0.75rem;">Neon</span>
-                    </div>
                     <div onclick="setCursor('fire')" class="cursor-option" data-cursor="fire" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
                         <div style="width: 20px; height: 20px; background: linear-gradient(45deg, #ff4500, #ff8c00); border-radius: 50%; margin: 0 auto 8px;"></div>
                         <span style="color: #888; font-size: 0.75rem;">Fire</span>
@@ -1086,6 +1101,14 @@
                     <div onclick="setCursor('purple')" class="cursor-option" data-cursor="purple" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
                         <div style="width: 20px; height: 20px; background: #9933ff; border: 2px solid #6600cc; border-radius: 50%; margin: 0 auto 8px;"></div>
                         <span style="color: #888; font-size: 0.75rem;">Purple</span>
+                    </div>
+                    <div onclick="setCursor('rainbow')" class="cursor-option" data-cursor="rainbow" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: linear-gradient(45deg, red, orange, yellow, green, blue, purple); border-radius: 50%; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Rainbow</span>
+                    </div>
+                    <div onclick="setCursor('neon')" class="cursor-option" data-cursor="neon" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
+                        <div style="width: 20px; height: 20px; background: #0ff; border: 2px solid #0ff; border-radius: 50%; box-shadow: 0 0 10px #0ff; margin: 0 auto 8px;"></div>
+                        <span style="color: #888; font-size: 0.75rem;">Neon</span>
                     </div>
                     <div onclick="setCursor('matrix')" class="cursor-option" data-cursor="matrix" style="background: #1a1a1a; border: 2px solid #333; border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s;">
                         <div style="width: 20px; height: 20px; background: #003300; border: 2px solid #00ff00; border-radius: 3px; margin: 0 auto 8px; box-shadow: 0 0 3px #00ff00;"></div>
@@ -1363,6 +1386,7 @@
             <div>
                 <div style="color: #fff; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Achievement Unlocked!</div>
                 <div id="achievement-name" style="color: #fff; font-size: 1.1rem; font-weight: 600;"></div>
+                <div id="achievement-subtext" style="color: #ccc; font-size: 0.85rem; margin-top: 2px;"></div>
             </div>
         </div>
     </div>
@@ -2800,10 +2824,28 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             }
         }
 
+        function getCursorFromAchievement(achievementId) {
+            const mapping = {
+                master_gamer: 'Rainbow',
+                tool_master: 'Neon',
+                veteran: 'Matrix'
+            };
+            return mapping[achievementId] || null;
+        }
+
         function showAchievementNotification(achievement) {
             const notification = document.getElementById('achievement-notification');
             document.getElementById('achievement-emoji').textContent = achievement.icon;
             document.getElementById('achievement-name').textContent = achievement.name;
+
+            const cursorName = getCursorFromAchievement(achievement.id);
+            const subtextEl = document.getElementById('achievement-subtext');
+            if (cursorName) {
+                subtextEl.textContent = `${cursorName} cursor unlocked`; 
+            } else {
+                subtextEl.textContent = '';
+            }
+
             notification.style.display = 'block';
             setTimeout(() => {
                 notification.style.display = 'none';
@@ -3666,6 +3708,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             document.getElementById('settingsView').style.display = 'block';
             loadCurrentSettings();
             loadCursorSetting();
+            updateCursorOptionsLockState();
             previousView = 'settings';
         }
 
@@ -4236,9 +4279,43 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             ensureNavbarProfileButton();
         });
 
+        function isCursorSkinUnlocked(style) {
+            if (!style || style === 'default' || style === 'fire' || style === 'ice' || style === 'gold' || style === 'geek' || style === 'pink' || style === 'dark' || style === 'red' || style === 'purple') {
+                return true;
+            }
+            const unlocked = getUnlockedAchievements();
+            const requirements = {
+                rainbow: 'master_gamer',
+                neon: 'tool_master',
+                matrix: 'veteran'
+            };
+            const required = requirements[style];
+            return required ? unlocked.includes(required) : true;
+        }
+
+        function getCursorSkinLockDescription(style) {
+            const desc = {
+                rainbow: 'Unlock Master Gamer by playing 50 games',
+                neon: 'Unlock Tool Master by using 10 different tools',
+                matrix: 'Unlock Veteran by using Coreus for 7 days'
+            };
+            return desc[style] || 'Unlock via achievements';
+        }
+
         function setCursor(style) {
-            localStorage.setItem('coreus_cursor_style', style);
-            
+            if (!isCursorSkinUnlocked(style)) {
+                showCursorLockModal(style);
+                const savedCursor = localStorage.getItem('coreus_cursor_style') || 'default';
+                if (!isCursorSkinUnlocked(savedCursor)) {
+                    style = 'default';
+                    localStorage.setItem('coreus_cursor_style', style);
+                } else {
+                    style = savedCursor;
+                }
+            } else {
+                localStorage.setItem('coreus_cursor_style', style);
+            }
+
             const cursor = document.querySelector('.cursor-dot');
             if (cursor) {
                 cursor.className = 'cursor-dot';
@@ -4246,16 +4323,53 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                     cursor.classList.add(style);
                 }
             }
-            
+
             document.querySelectorAll('.cursor-option').forEach(opt => {
                 opt.classList.remove('selected');
             });
             document.querySelector(`.cursor-option[data-cursor="${style}"]`)?.classList.add('selected');
+            updateCursorOptionsLockState();
+        }
+
+        function updateCursorOptionsLockState() {
+            document.querySelectorAll('.cursor-option').forEach(opt => {
+                const style = opt.getAttribute('data-cursor');
+                const isUnlocked = isCursorSkinUnlocked(style);
+                if (!isUnlocked) {
+                    opt.classList.add('locked');
+                    opt.querySelector('.lock-label')?.remove();
+                    const lockLabel = document.createElement('div');
+                    lockLabel.className = 'lock-label';
+                    lockLabel.textContent = '🔒';
+                    lockLabel.style.fontSize = '10px';
+                    lockLabel.style.color = '#ff9f43';
+                    lockLabel.style.marginTop = '4px';
+                    opt.appendChild(lockLabel);
+                } else {
+                    opt.classList.remove('locked');
+                    opt.querySelector('.lock-label')?.remove();
+                }
+            });
         }
 
         function loadCursorSetting() {
             const savedCursor = localStorage.getItem('coreus_cursor_style') || 'default';
             setCursor(savedCursor);
+        }
+
+        function showCursorLockModal(style) {
+            const modal = document.getElementById('cursorLockModal');
+            if (!modal) return;
+            const lockText = document.getElementById('cursorLockText');
+            if (lockText) {
+                lockText.textContent = `The "${style}" cursor is locked. ${getCursorSkinLockDescription(style)}.`;
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeCursorLockModal() {
+            const modal = document.getElementById('cursorLockModal');
+            if (modal) modal.style.display = 'none';
         }
 
         function formatTime(seconds) {
