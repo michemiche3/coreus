@@ -3531,8 +3531,9 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                 document.getElementById('categoriesSection').style.display = 'block';
             }
 
-            // Set featured games (first 5 popular ones)
-            featuredGames = games.slice(0, 5);
+            // Set featured games (random 5 each load)
+            const shuffledGames = games.slice().sort(() => Math.random() - 0.5);
+            featuredGames = shuffledGames.slice(0, 5);
 
             // Load featured carousel
             loadFeaturedCarousel();
