@@ -1315,6 +1315,15 @@
             </div>
         </div>
 
+        <!-- Last played games -->
+        <div id="lastPlayedSection" style="max-width: 1200px; margin: 0 auto 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #ffffff;">Last played games</h3>
+                <button id="clearLastPlayedBtn" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.35); padding: 4px 10px; border-radius: 10px; cursor: pointer; font-size: 0.8rem;">Clear</button>
+            </div>
+            <div id="lastPlayedList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;"></div>
+        </div>
+
         <!-- Search -->
         <div style="display: flex; justify-content: center; margin-bottom: 30px;">
             <input type="text" id="gamesSearchInput" placeholder="Search games..." style="width: 100%; max-width: 500px; padding: 12px 20px; font-size: 1rem; background-color: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 25px; color: var(--primary-text); outline: none; transition: all 0.3s ease;" />
@@ -1939,6 +1948,7 @@
         let currentCategory = 'all';
         let featuredGames = [];
         let currentFeaturedIndex = 0;
+        let gamesCache = [];
         let toolsBackend = localStorage.getItem('toolsBackend') || 'auto';
 
         let cloakingOption = localStorage.getItem('cloakingOption') || 'No';
@@ -2493,7 +2503,7 @@
             document.querySelector('.container').style.display = 'block';
         }
 
-        function showGamePopup(gamePath, popupTitle, isSelenite = false) {
+        function showGamePopup(gamePath, popupTitle, isSelenite = false, gameImage = '') {
             previousView = 'games';
             currentGamePath = gamePath;
 
@@ -2507,7 +2517,8 @@
             
             setTimeout(() => reapplyHacks(), 3000);
 
-            trackGamePlay(popupTitle);
+            const backend = isSelenite ? 'selenite' : 'vrtx';
+            trackGamePlay(popupTitle, gamePath, gameImage, backend);
 
             startFpsCounter();
             trackFrame();
@@ -3096,9 +3107,119 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             previousView = 'achievements';
         }
 
-        function trackGamePlay(gameName) {
-            if (!gameName) return;
-            
+        function addLastPlayedGame(gameName, gamePath, gameImage, backend = 'vrtx') {
+            if (!gameName || !gamePath) return;
+
+            const finalImage = gameImage || getGameImageByPath(gamePath, gameName);
+            const key = getLastPlayedStorageKey(backend);
+            let lastPlayed = JSON.parse(localStorage.getItem(key) || '[]');
+            lastPlayed = lastPlayed.filter(item => item.name !== gameName);
+
+            lastPlayed.unshift({
+                name: gameName,
+                path: gamePath,
+                image: finalImage || '',
+                playedAt: Date.now()
+            });
+
+            if (lastPlayed.length > 5) lastPlayed = lastPlayed.slice(0, 5);
+            localStorage.setItem(key, JSON.stringify(lastPlayed));
+            renderLastPlayedGames(backend);
+        }
+
+        function getLastPlayedStorageKey(backend) {
+            const b = backend === 'selenite' ? 'selenite' : 'vrtx';
+            return `coreus_last_played_games_${b}`;
+        }
+
+        function getLastPlayedGames(backend) {
+            const key = getLastPlayedStorageKey(backend);
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+
+        function getGameImageByPath(gamePath, gameName = '') {
+            if (!gamesCache || !gamesCache.length) return '';
+            const pathLower = (gamePath || '').toLowerCase();
+            const nameLower = (gameName || '').toLowerCase();
+
+            let game = gamesCache.find(g => {
+                const candidatePath = (g.href || g.url || g.path || '').toLowerCase();
+                const candidateName = ((g.title || g.name || '')).toLowerCase();
+                return candidatePath && candidatePath === pathLower;
+            });
+
+            if (!game && nameLower) {
+                game = gamesCache.find(g => ((g.title || g.name || '')).toLowerCase() === nameLower);
+            }
+
+            if (game && game.image) {
+                if (game.image.startsWith('http') || game.image.startsWith('./') || game.image.startsWith('/')) {
+                    return game.image;
+                }
+                return 'https://noodlelover1.github.io/coreus-assets/' + game.image;
+            }
+
+            return '';
+        }
+
+        function formatTimeAgo(timestamp) {            const diff = Date.now() - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            if (minutes < 1) return 'just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            const days = Math.floor(hours / 24);
+            return `${days}d ago`;
+        }
+
+        function renderLastPlayedGames(backend = 'vrtx') {
+            const container = document.getElementById('lastPlayedList');
+            if (!container) return;
+            const lastPlayed = getLastPlayedGames(backend);
+            container.innerHTML = '';
+
+            if (!lastPlayed.length) {
+                container.innerHTML = '<span style="color: #999; font-size: 0.95rem;">No recently played games yet.</span>';
+                return;
+            }
+
+            lastPlayed.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.style.cursor = 'pointer';
+
+                const imageSrc = item.image || '';
+
+                card.innerHTML = `
+                    <div style="position: relative;">
+                        <img src="${imageSrc}" alt="${item.name}" onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22120%22><rect width=%22180%22 height=%22120%22 fill=%22%23333%22/></svg>'" />
+                    </div>
+                    <div class="game-card-content">
+                        <div class="game-card-title">${item.name}</div>
+                        <div class="game-card-category">Played ${formatTimeAgo(item.playedAt)}</div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    showGamePopup(item.path, item.name, item.path.startsWith(seleniteConfig.baseUrl));
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        function searchGames(gameName) {
+            const gamesSearchInput = document.getElementById('gamesSearchInput');
+            if (gamesSearchInput) {
+                gamesSearchInput.value = gameName;
+            }
+            filterGameCards(gameName);
+        }
+
+        function trackGamePlay(gameName, gamePath, gameImage, backend = 'vrtx') {
+            if (!gameName || !gamePath) return;
+            addLastPlayedGame(gameName, gamePath, gameImage, backend);
+
             const playedGames = JSON.parse(localStorage.getItem('coreus_played_games') || '[]');
             if (!playedGames.includes(gameName)) {
                 playedGames.push(gameName);
@@ -3531,6 +3652,9 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                 document.getElementById('categoriesSection').style.display = 'block';
             }
 
+            // Keep a cache for lookups (e.g., last played thumbnails)
+            gamesCache = games;
+
             // Set featured games (random 5 each load)
             const shuffledGames = games.slice().sort(() => Math.random() - 0.5);
             featuredGames = shuffledGames.slice(0, 5);
@@ -3583,7 +3707,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                     <div style="position: relative;">
                         <img src="${imageSrc}"
                              alt="${title}"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'220\' height=\'150\' viewBox=\'0 0 220 150\'><rect width=\'220\' height=\'150\' fill=\'%23333\'/><text x=\'110\' y=\'80\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'220\' height=\'150\' viewBox=\'0 0 220 150\'><rect width=\'220\' height=\'150\' fill=\'%23333\'/></svg>';">
                         <button class="game-card-favorite ${isFavorite ? 'active' : ''}" data-title="${title}">
                             ${isFavorite ? '★' : '☆'}
                         </button>
@@ -3603,7 +3727,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
 
                 gameCard.addEventListener('click', () => {
                     if (gamePath) {
-                        showGamePopup(gamePath, title, isSelenite);
+                        showGamePopup(gamePath, title, isSelenite, imageSrc);
                     }
                 });
 
@@ -3616,6 +3740,17 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                     filterGameCards(e.target.value);
                 });
             }
+
+            const clearLastPlayedBtn = document.getElementById('clearLastPlayedBtn');
+            if (clearLastPlayedBtn) {
+                clearLastPlayedBtn.addEventListener('click', () => {
+                    const key = getLastPlayedStorageKey(gameBackend);
+                    localStorage.removeItem(key);
+                    renderLastPlayedGames(gameBackend);
+                });
+            }
+
+            renderLastPlayedGames(gameBackend);
         }
 
         function filterGameCards(searchTerm) {
@@ -3657,7 +3792,8 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
 
                 const playBtn = slide.querySelector('.featured-play-btn');
                 playBtn.addEventListener('click', () => {
-                    showGamePopup(game.gamePath || game.href, game.title || game.name, gameBackend === 'selenite');
+                    const gameImageSrc = gameBackend === 'selenite' ? (seleniteConfig.baseUrl + game.image) : ('https://noodlelover1.github.io/coreus-assets/' + game.image);
+                    showGamePopup(game.gamePath || game.href || '', game.title || game.name, gameBackend === 'selenite', gameImageSrc);
                 });
 
                 const indicator = document.createElement('div');
