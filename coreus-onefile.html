@@ -335,25 +335,75 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            border: none;
+            background: rgba(0,0,0,0.65);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 34px;
+            height: 34px;
+            font-size: 0.9rem;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 0 rgba(255,215,0,0); 
         }
 
         .game-card-favorite:hover {
-            background: var(--accent-color);
+            background: rgba(255, 255, 255, 0.85);
+            color: #000;
+            transform: scale(1.08);
+            border-color: #ffd700;
         }
 
         .game-card-favorite.active {
-            background: #ff6b6b;
+            background: linear-gradient(135deg, #ffd700, #ffcb00);
+            color: #000;
+            border-color: #ffaa00;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+            transform: scale(1.12);
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+        }
+
+        #favoriteZone {
+            max-width: 1200px;
+            width: calc(100% - 40px);
+            margin: 0 auto 20px;
+        }
+
+        .favorite-slot {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            padding: 12px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 255, 255, 0.05));
+            border: 2px dashed rgba(255, 215, 0, 0.7);
+            border-radius: 15px;
+            min-height: 110px;
+        }
+
+        .favorite-slot-card {
+            border: 2px solid #FFD700;
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.25);
+            transform: translateY(0);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .favorite-slot-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(255, 215, 0, 0.35);
+        }
+
+        .favorite-slot-title {
+            grid-column: 1 / -1;
+            color: #ffeb8a;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            margin-bottom: 8px;
         }
 
         /* Click Ripple Effect */
@@ -1328,6 +1378,9 @@
         <div style="display: flex; justify-content: center; margin-bottom: 30px;">
             <input type="text" id="gamesSearchInput" placeholder="Search games..." style="width: 100%; max-width: 500px; padding: 12px 20px; font-size: 1rem; background-color: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 25px; color: var(--primary-text); outline: none; transition: all 0.3s ease;" />
         </div>
+
+        <!-- Golden Zone Favorites -->
+        <div id="favoriteZone"></div>
 
         <!-- Games Grid -->
         <div id="gamesGrid" style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; padding: 10px;"></div>
@@ -3127,6 +3180,48 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             renderLastPlayedGames(backend);
         }
 
+        function createGameCard(game, isSelenite, isFavorite = false, isSlot = false) {
+            const title = game.title || game.name || 'Unknown Game';
+            const category = game.category || 'Casual';
+            const imagePath = game.image || game.img || '';
+            const gamePath = game.gamePath || game.href || game.path || game.url || '';
+            const imageSrc = isSelenite ? (seleniteConfig.baseUrl + imagePath) : ('https://noodlelover1.github.io/coreus-assets/' + imagePath);
+
+            const card = document.createElement('div');
+            card.className = 'game-card' + (isSlot ? ' favorite-slot-card' : '');
+            card.setAttribute('data-game-name', title.toLowerCase());
+            card.setAttribute('data-category', category.toLowerCase());
+
+            const generatedCategory = isSlot ? 'Favorite' : category;
+
+            card.innerHTML = `
+                <div style="position: relative;">
+                    <img src="${imageSrc}" alt="${title}" onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22220%22 height=%22150%22><rect width=%22220%22 height=%22150%22 fill=%22%23333%22/></svg>';" />
+                    <button class="game-card-favorite ${isFavorite ? 'active' : ''}" data-title="${title}">
+                        ${isFavorite ? '★' : '☆'}
+                    </button>
+                </div>
+                <div class="game-card-content">
+                    <div class="game-card-title">${title}</div>
+                    <div class="game-card-category">${generatedCategory}</div>
+                </div>
+            `;
+
+            const favBtn = card.querySelector('.game-card-favorite');
+            favBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleGameFavorite(title);
+            });
+
+            card.addEventListener('click', () => {
+                if (gamePath) {
+                    showGamePopup(gamePath, title, isSelenite, imageSrc);
+                }
+            });
+
+            return card;
+        }
+
         function getLastPlayedStorageKey(backend) {
             const b = backend === 'selenite' ? 'selenite' : 'vrtx';
             return `coreus_last_played_games_${b}`;
@@ -3667,70 +3762,34 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
 
             const favorites = getGameFavorites();
             filteredGames.sort((a, b) => {
-                const titleA = a.title || a.name || '';
-                const titleB = b.title || b.name || '';
-                const aFav = favorites.includes(titleA);
-                const bFav = favorites.includes(titleB);
-                if (aFav && !bFav) return -1;
-                if (!aFav && bFav) return 1;
-                return titleA.toLowerCase().localeCompare(titleB.toLowerCase());
+                const titleA = (a.title || a.name || '').toLowerCase();
+                const titleB = (b.title || b.name || '').toLowerCase();
+                return titleA.localeCompare(titleB);
             });
+
+            // Golden zone favorites block
+            const favoriteZone = document.getElementById('favoriteZone');
+            if (favoriteZone) {
+                const favoriteGames = filteredGames.filter(g => favorites.includes((g.title || g.name || '').toString()));
+                if (favoriteGames.length > 0) {
+                    favoriteZone.innerHTML = '<div class="favorite-slot-title">Favorites</div>';
+                    const favSlot = document.createElement('div');
+                    favSlot.className = 'favorite-slot';
+                    favoriteGames.forEach(favGame => {
+                        favSlot.appendChild(createGameCard(favGame, isSelenite, true, true));
+                    });
+                    favoriteZone.appendChild(favSlot);
+                } else {
+                    favoriteZone.innerHTML = '';
+                }
+            }
 
             const gamesGrid = document.getElementById('gamesGrid');
             gamesGrid.innerHTML = '';
 
-            if (favorites.length > 0 && currentCategory === 'all') {
-                const favHeader = document.createElement('div');
-                favHeader.style.cssText = 'grid-column: 1 / -1; color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; padding: 10px 0; border-bottom: 2px solid #333;';
-                favHeader.textContent = '★ Favorites';
-                gamesGrid.appendChild(favHeader);
-            }
-
             filteredGames.forEach(game => {
-                const title = game.title || game.name || 'Unknown Game';
-                const imagePath = game.image || game.img || '';
-                const gamePath = game.gamePath || game.href || game.path || game.url || '';
-                const category = game.category || 'Casual';
-
-                const gameCard = document.createElement('div');
-                gameCard.className = 'game-card';
-                gameCard.setAttribute('data-game-name', title.toLowerCase());
-                gameCard.setAttribute('data-category', category.toLowerCase());
-
-                const imageSrc = isSelenite ? (seleniteConfig.baseUrl + imagePath) : ('https://noodlelover1.github.io/coreus-assets/' + imagePath);
-                const isFavorite = favorites.includes(title);
-                const isHackable = gamePath && (gamePath.includes('driftboss') || gamePath.includes('drift-boss') || gamePath.includes('drift_boss') || gamePath.includes('drivenwild') || gamePath.includes('driven-wild') || gamePath.includes('driven_wild'));
-                
-                const hackBadge = isHackable ? `<div style="position: absolute; bottom: 5px; left: 5px; background: linear-gradient(135deg, #ff6b35, #ff9a44); padding: 3px 8px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px;"><i class="fas fa-hack" style="font-size: 0.6rem;"></i> HACKABLE</div>` : '';
-
-                gameCard.innerHTML = `
-                    <div style="position: relative;">
-                        <img src="${imageSrc}"
-                             alt="${title}"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'220\' height=\'150\' viewBox=\'0 0 220 150\'><rect width=\'220\' height=\'150\' fill=\'%23333\'/></svg>';">
-                        <button class="game-card-favorite ${isFavorite ? 'active' : ''}" data-title="${title}">
-                            ${isFavorite ? '★' : '☆'}
-                        </button>
-                        ${hackBadge}
-                    </div>
-                    <div class="game-card-content">
-                        <div class="game-card-title">${title}</div>
-                        <div class="game-card-category">${category}</div>
-                    </div>
-                `;
-
-                const favBtn = gameCard.querySelector('.game-card-favorite');
-                favBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    toggleGameFavorite(title);
-                });
-
-                gameCard.addEventListener('click', () => {
-                    if (gamePath) {
-                        showGamePopup(gamePath, title, isSelenite, imageSrc);
-                    }
-                });
-
+                const isFavorite = favorites.includes((game.title || game.name || '').toString());
+                const gameCard = createGameCard(game, isSelenite, isFavorite, false);
                 gamesGrid.appendChild(gameCard);
             });
 
