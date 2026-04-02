@@ -19,8 +19,10 @@
     <link rel="canonical" href="https://noodlelover1.github.io/coreus/">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000'/><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery.terminal/css/jquery.terminal.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery.terminal/js/jquery.terminal.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
         :root {
@@ -98,6 +100,29 @@
             z-index: 2147483647;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 8px rgba(0,0,0,0.3);
+        }
+
+        .terminal, .terminal * {
+            cursor: text !important;
+            color: #7CFC00 !important;
+            font-family: 'Courier New', Courier, monospace !important;
+            background: #000 !important;
+        }
+
+        .terminal .command, .terminal .echo, .terminal .prompt, .terminal .output, .terminal .history {
+            color: #7CFC00 !important;
+        }
+
+        .terminal .cursor {
+            display: inline-block;
+            width: 8px;
+            background: #7CFC00;
+            animation: terminal-cursor 1s step-end infinite;
+        }
+
+        @keyframes terminal-cursor {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
         
         .cursor-dot.rainbow {
@@ -895,6 +920,10 @@
             <i class="fas fa-comment-alt" style="color: white; font-size: 20px;"></i>
         </button>
         <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showTerminalView()" title="Terminal">
+            <i class="fas fa-terminal" style="color: white; font-size: 20px;"></i>
+        </button>
+        <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
         <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAboutView()">
             <i class="fas fa-info-circle" style="color: white; font-size: 20px;"></i>
         </button>
@@ -1408,6 +1437,14 @@
         </div>
         <div id="toolsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; padding: 10px;"></div>
  
+    </div>
+
+    <div id="terminalView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); background-image: radial-gradient(circle, #222 1px, transparent 1px); background-size: 40px 40px; z-index: 2000; overflow: hidden; padding: 12px 10px 20px 10px;">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h2 style="color: #7CFC00; margin-bottom: 4px; font-size: 1.7rem;">Coreus Terminal</h2>
+            <p style="color: #9cff9c; font-size: 0.92rem; margin: 0;">Pseudo-shell in browser. Type <strong>help</strong> to get started.</p>
+        </div>
+        <div id="terminalContainer" style="width: 95%; max-width: 95%; height: 70vh; min-height: 300px; max-height: 75vh; margin: 0 auto; border: 1px solid rgba(124,252,0,0.25); border-radius: 12px; background: #000; box-shadow: 0 0 30px rgba(0,255,0,0.25); overflow: hidden;"></div>
     </div>
 
     <div id="animeView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 2000; overflow-y: auto; padding: 30px 20px 100px 20px;">
@@ -2316,6 +2353,93 @@
             hideAllViews();
             document.getElementById('gamesView').style.display = 'block';
             await loadGames();
+        }
+
+        let coreusTerminalInstance = null;
+        function showTerminalView() {
+            hideAllViews();
+            document.getElementById('terminalView').style.display = 'block';
+            previousView = 'terminal';
+
+            const userPrefix = (currentAccount && currentAccount.username) ? currentAccount.username : 'user';
+            const promptText = `${userPrefix}@coreus$ `;
+
+            if (!coreusTerminalInstance && window.jQuery && $.terminal) {
+                coreusTerminalInstance = $('#terminalContainer').terminal(function(command, term) {
+                    const input = (command || '').trim();
+                    if (!input) return;
+
+                    const parts = input.split(' ').filter(Boolean);
+                    const cmd = parts[0].toLowerCase();
+                    const args = parts.slice(1);
+
+                    const fakeFs = ['assets', 'games', 'tools', 'index.html', 'README.md', 'LICENSE'];
+
+                    switch (cmd) {
+                        case 'help':
+                            term.echo('Commands: help, echo, date, time, clear, ls, pwd, whoami, cat, about, exit', {color: '#7CFC00'});
+                            break;
+                        case 'echo':
+                            term.echo(args.join(' '), {color: '#7CFC00'});
+                            break;
+                        case 'date':
+                            term.echo(new Date().toUTCString(), {color: '#7CFC00'});
+                            break;
+                        case 'time':
+                            term.echo(new Date().toLocaleTimeString(), {color: '#7CFC00'});
+                            break;
+                        case 'pwd':
+                            term.echo('/home/coreus', {color: '#7CFC00'});
+                            break;
+                        case 'ls':
+                            term.echo(fakeFs.join('  '), {color: '#7CFC00'});
+                            break;
+                        case 'whoami':
+                            term.echo(userPrefix, {color: '#7CFC00'});
+                            break;
+                        case 'cat':
+                            if (args.length === 0) {
+                                term.echo('Usage: cat <filename>', {color: '#7CFC00'});
+                            } else {
+                                const file = args.join(' ');
+                                if (file === 'README.md') {
+                                    term.echo('Coreus is a portable unblocked games platform with games, tools, proxy, chat, and more.', {color: '#7CFC00'});
+                                } else if (file === 'LICENSE') {
+                                    term.echo('AGPL v3.0 License (coreus).', {color: '#7CFC00'});
+                                } else if (file === 'index.html') {
+                                    term.echo('This is the main app file for Coreus (HTML/CSS/JS).', {color: '#7CFC00'});
+                                } else {
+                                    term.echo('cat: ' + file + ': No such file or directory', {color: '#7CFC00'});
+                                }
+                            }
+                            break;
+                        case 'about':
+                            term.echo('Coreus is the truly unblockable browser games platform with 500+ games, proxy browsing, tools, anime streaming, chat, and achievements. This terminal is a local emulator and not a real shell.', {color: '#7CFC00'});
+                            break;
+                        case 'exit':
+                            showGamesView();
+                            break;
+                        default:
+                            term.echo('Command not found: ' + cmd, {color: '#7CFC00'});
+                            break;
+                    }
+                }, {
+                    greetings: 'Coreus pseudo-terminal. Type help for commands.',
+                    prompt: promptText,
+                    onBlur: function() { return true; }
+                });
+
+                setTimeout(() => {
+                    if (coreusTerminalInstance && coreusTerminalInstance.focus) {
+                        coreusTerminalInstance.focus();
+                    }
+                }, 100);
+            } else if (coreusTerminalInstance) {
+                coreusTerminalInstance.set_prompt(promptText);
+                if (coreusTerminalInstance.focus) {
+                    setTimeout(() => coreusTerminalInstance.focus(), 100);
+                }
+            }
         }
 
         const jikanAPI = 'https://api.jikan.moe/v4';
@@ -3895,7 +4019,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
         function hideAllViews() {
             document.querySelector('.container').style.display = 'none';
             stopFpsCounter();
-            ['gamesView','toolsView','aboutView','settingsView','chatView','aiView','accountView', 'proxyView', 'achievementsView', 'privacyPolicyView', 'disclaimerView', 'dmcaView', 'statsView', 'gamePopup', 'animeView', 'animePlayerView'].forEach(id => {
+            ['gamesView','toolsView','aboutView','settingsView','chatView','aiView','accountView', 'proxyView', 'achievementsView', 'privacyPolicyView', 'disclaimerView', 'dmcaView', 'statsView', 'gamePopup', 'animeView', 'animePlayerView', 'terminalView'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'none';
             });
