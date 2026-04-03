@@ -608,6 +608,13 @@
 		"href": "games/revidle/",
 		"category": "Idle"
 	},
+		{
+		"name": "Riskigold Clicker",
+		"tags": "gold, clicker, idle",
+		"image": "img/risclicker.webp",
+		"href": "games/risclicker/",
+		"category": "Idle"
+	},
 	{
 		"name": "Rolly Vortex",
 		"tags": "casual, vortex, ball",
