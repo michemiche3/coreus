@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background-image: linear-gradient(to left, #868df7, #b46ef5);
+      font-family: verdana;
+      text-align:center;
+    }
+    .counter {
+      background-image: linear-gradient(to bottom, #868df7, #b46ef5);
+      padding: 10px 20px;
+      width: 150px;
+      font-size: 20px;
+      border-radius: 20px;
+      color: white;
+      text-align: center;
+      display: inline-block;
+    }
+    .button {
+      padding: 10px 20px;
+      background-image: linear-gradient(to bottom, #868df7, #b46ef5);
+      cursor: pointer;
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 20px;
+      text-align:center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>riskigold clicker</h1>
+
+  <button id="clicker" class="button">Mine gold!</button>
+  <br>
+  <p id="counter" class="counter">0 gold</p>
+  <br>
+  <button class="button" id="upgrade">Better pickaxe (costs 50)</button>
+
+  <script>
+    let counter = 0;
+    let cpc = 1;
+
+    const counterDisplay = document.getElementById('counter');
+    const clickerBtn = document.getElementById('clicker');
+    const upgradeBtn = document.getElementById('upgrade');
+    // Function to update the text on screen
+    function updateDisplay() {
+      counterDisplay.innerText = counter + ' gold (+' + cpc + ')';
+    }
+
+    clickerBtn.addEventListener('click', function() {
+      counter = counter + cpc;
+      updateDisplay();
+    });
+
+    upgradeBtn.addEventListener('click', function() {
+      // Check if user has at least 50
+      if (counter >= 50) {
+        counter = counter - 50; // Subtract 50
+        cpc = cpc + 1;          // Increase click power
+        updateDisplay();        // Refresh UI
+      } else {
+        alert("Not enough gold! You need 50 clicks.");
+      }
+    });
+  </script>
+</body>
+</html>
