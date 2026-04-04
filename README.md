@@ -95,6 +95,25 @@ node server.js
 ~~~
 And open http://localhost:3000
 
+### VPS or permanent server
+Coreus provide binaries to serve the website on a VPS or a permanent server, that keep server alive after restarting.
+
+You will need a systemd-based linux system with node, npm and git installed.
+
+Then run :
+```bash
+curl -FsSL https://raw.githubusercontent.com/noodlelover1/coreus/refs/heads/main/install.sh | sudo bash
+```
+Finally run :
+```bash
+coreus install
+```
+It will install a systemd service that start a node web server, enable and start it.
+
+To uninstall it run :
+```bash
+coreus uninstall
+```
 ### Code editors
 
 Copy the entire <code>coreus-onefile.html</code> file content, then navigate to any HTML editor (e.g w3schools) and paste the code.
