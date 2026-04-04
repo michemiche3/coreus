@@ -124,6 +124,7 @@ Contributions are happily accepted and requested ! Open an issue or make a pull 
 
 - [n00dle](https://github.com/noodlelover1) : Owner, founder and main dev of the project.
 - [CoderandHacker69](https://github.com/CoderandHacker69) : First contributor, made full version, deploy buttons, panic key and pinging service.
+- [paulcalatayud35](https://github.com/pulcalatayud35) : Fixed some bugs, made Riskigold Clicker
   
 ## Credits
 
