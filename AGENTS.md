@@ -42,14 +42,13 @@ coreus/
 ├── LICENSE                 # AGPL v3.0 license
 ├── README.md               # User documentation
 ├── AGENTS.md               # This file - AI assistant guide
-└── assets/
-    ├── games.json          # Games catalog metadata (113 VRTX games)
-    ├── img/                # Game thumbnail images (*.webp, *.png, *.jpg, *.jpeg, *.avif)
-    └── games/              # Individual game folders (100+ games)
-        ├── gdash/          # Geometry Dash
-        ├── amongus/        # Among Us
-        ├── cookieclicker/  # Cookie Clicker
-        └── ...             # Many more games
+├── games.json          # Games catalog metadata (113 VRTX games)
+├── img/                # Game thumbnail images (*.webp, *.png, *.jpg, *.jpeg, *.avif)
+└── games/              # Individual game folders (100+ games)
+    ├── gdash/          # Geometry Dash
+    ├── amongus/        # Among Us
+    ├── cookieclicker/  # Cookie Clicker
+    └── ...             # Many more games
 ```
 
 ---
