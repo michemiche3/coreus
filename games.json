@@ -100,6 +100,40 @@
 	{
 		"name": "Bitcoin Clicker",
 		"tags": "money, clicker, idle",
+Skip to content
+
+    noodlelover1
+    coreus
+
+Repository navigation
+
+    Code
+    Issues
+    Pull requests
+    Actions
+
+Uploading files to coreus/games/towr
+Breadcrumbs
+coreus/games/towr
+Upload files
+Drag additional files here to add them to your repository
+
+Or
+/css/style.css
+icon.svg
+index.html
+/js/enemies.js
+/js/game-loop.js
+/js/game.js
+/js/projectiles.js
+/js/tower.js
+@noodlelover1
+Commit changes
+Commit summary
+Optional extended description
+Commit directly to the main branch.
+Create a new branch for this commit and start a pull request. Learn more about pull requests.
+Upload files · noodlelover1/coreus
 		"image": "img/btclicker.svg",
 		"href": "games/bitcoin/",
 		"category": "Idle"
@@ -235,6 +269,13 @@
 		"tags": "hit, knife, casual",
 		"image": "img/coreball.png",
 		"href": "games/coreball/",
+		"category": "Casual"
+	},
+	{
+		"name": "CORE(us) Towr",
+		"tags": "hit, shoot, casual",
+		"image": "games/towr/icon.svg",
+		"href": "games/towr/",
 		"category": "Casual"
 	},
 	{
