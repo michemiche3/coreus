@@ -1141,7 +1141,7 @@
                     const data = await response.json();
                     games = data.map(g => ({ title: g.name, image: seleniteConfig.gameFolderBase + '/' + g.directory + '/' + g.image, path: seleniteConfig.gameFolderBase + '/' + g.directory + '/index.html' }));
                 } else {
-                    const response = await fetch('./assets/games.json');
+                    const response = await fetch('./games.json');
                     games = await response.json();
                 }
                 
@@ -1152,7 +1152,7 @@
                     if (title === currentGame) return;
                     const image = game.image || game.img || '';
                     const path = game.gamePath || game.href || game.path || game.url || '';
-                    const imageSrc = (gameBackend === 'selenite' ? seleniteConfig.baseUrl : './assets/') + image;
+                    const imageSrc = (gameBackend === 'selenite' ? seleniteConfig.baseUrl : './') + image;
                     
                     const card = document.createElement('div');
                     card.style.cssText = 'background: #1a1a1a; border-radius: 12px; padding: 10px; cursor: pointer; transition: transform 0.3s; text-align: center;';
@@ -1259,9 +1259,7 @@
                         <option value="auto">Auto fallback (VRTX)</option>
                         <option value="default">Default (local only)</option>
                         <option value="selenite">Selenite (External)</option>
-                        <option value="https://coreus-assets-x44fhv591.onrender.com/">Mirror 1</option>
-                        <option value="https://coreus-assets-7hb65sx0h.onrender.com/">Mirror 2</option>
-                        <option value="https://coreus-assets-g6kx36vv0.vercel.app/">Mirror 3</option>
+                        <option value="https://coreus-assets-g6kx36vv0.vercel.app/">Vercel Mirror</option>
                     </select>
                 </div>
             </div>
@@ -2058,8 +2056,6 @@
         let selectedProxy = proxyAPIs[0];
 
         const mirrorHosts = [
-            'https://coreus-assets-x44fhv591.onrender.com/',
-            'https://coreus-assets-7hb65sx0h.onrender.com/',
             'https://coreus-assets-g6kx36vv0.vercel.app/'
         ];
 
@@ -2292,8 +2288,6 @@
             if (backendSelect) {
 
                 const validOptions = ['auto', 'default', 'selenite', 
-                    'https://coreus-assets-x44fhv591.onrender.com/',
-                    'https://coreus-assets-7hb65sx0h.onrender.com/',
                     'https://coreus-assets-g6kx36vv0.vercel.app/'
                 ];
                 if (validOptions.includes(gameBackend)) {
@@ -2755,13 +2749,13 @@
                 hostList = [seleniteConfig.baseUrl];
             } else if (gameBackend === 'auto') {
 
-                hostList = ['./assets/', ...mirrorHosts];
+                hostList = ['./', ...mirrorHosts];
             } else if (gameBackend === 'default' || gameBackend === 'vrtx') {
 
-                hostList = ['./assets/'];
+                hostList = ['./'];
             } else {
 
-                hostList = [gameBackend, './assets/'];
+                hostList = [gameBackend, './'];
             }
             
             let currentIndex = 0;
@@ -3344,7 +3338,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             const category = game.category || 'Casual';
             const imagePath = game.image || game.img || '';
             const gamePath = game.gamePath || game.href || game.path || game.url || '';
-            const imageSrc = isSelenite ? (seleniteConfig.baseUrl + imagePath) : ('./assets/' + imagePath);
+            const imageSrc = isSelenite ? (seleniteConfig.baseUrl + imagePath) : ('./' + imagePath);
 
             const card = document.createElement('div');
             card.className = 'game-card' + (isSlot ? ' favorite-slot-card' : '');
@@ -3410,7 +3404,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                 if (game.image.startsWith('http') || game.image.startsWith('./') || game.image.startsWith('/')) {
                     return game.image;
                 }
-                return './assets/' + game.image;
+                return './' + game.image;
             }
 
             return '';
@@ -3714,7 +3708,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
 
         async function loadTools() {
             try {
-                const response = await fetch('./assets/tools.json');
+                const response = await fetch('./tools.json');
                 const tools = await response.json();
 
                 const toolsGrid = document.getElementById('toolsGrid');
@@ -3761,7 +3755,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
 
                     toolCard.innerHTML = `
                         <div style="position: relative; width: 150px; height: 150px;">
-                            <img src="./assets/${imagePath}"
+                            <img src="./${imagePath}"
                                  alt="${title}"
                                  style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; border: 1px solid var(--border-color);"
                                  onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
@@ -3828,7 +3822,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
 
             document.getElementById('gamePopup').style.display = 'block';
 
-            const toolUrl = `./assets/${toolPath}`;
+            const toolUrl = `./${toolPath}`;
             document.getElementById('gameUrlDisplay').textContent = popupTitle || toolUrl;
 
             trackToolUse(popupTitle);
@@ -3894,7 +3888,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
                 }
             } else {
                 try {
-                    const response = await fetch('./assets/games.json');
+                    const response = await fetch('./games.json');
                     games = await response.json();
                     console.log('Games data:', games);
                 } catch (error) {
@@ -4004,7 +3998,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
             featuredGames.forEach((game, index) => {
                 const slide = document.createElement('div');
                 slide.className = 'featured-slide';
-                const imageSrc = gameBackend === 'selenite' ? (seleniteConfig.baseUrl + game.image) : ('./assets/' + game.image);
+                const imageSrc = gameBackend === 'selenite' ? (seleniteConfig.baseUrl + game.image) : ('./' + game.image);
                 slide.style.backgroundImage = `url('${imageSrc}')`;
                 slide.innerHTML = `
                     <div class="featured-content">
@@ -4016,7 +4010,7 @@ const isDriftBoss = gamePath.includes('driftboss') || gamePath.includes('drift-b
 
                 const playBtn = slide.querySelector('.featured-play-btn');
                 playBtn.addEventListener('click', () => {
-                    const gameImageSrc = gameBackend === 'selenite' ? (seleniteConfig.baseUrl + game.image) : ('./assets/' + game.image);
+                    const gameImageSrc = gameBackend === 'selenite' ? (seleniteConfig.baseUrl + game.image) : ('./' + game.image);
                     showGamePopup(game.gamePath || game.href || '', game.title || game.name, gameBackend === 'selenite', gameImageSrc);
                 });
 
