@@ -14,7 +14,7 @@
 
 </div>
 
-### ⭐ PLEASE STAR IF YOU FORK ⭐
+### ⭐ PLEASE STAR IF YOU FORK OR ENJOY ⭐
 ## STOLEN CODE
 - https://github.com/l3br00n/lebron
 - https://github.com/t02530501-maker/nexus
